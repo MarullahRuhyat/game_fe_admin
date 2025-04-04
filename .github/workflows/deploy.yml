@@ -1,0 +1,36 @@
+name: Deploy to prod 
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_IP }}        
+          username: ${{ secrets.SSH_USER }} 
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  
+          port: 22    
+          script: |
+            echo "Navigation to project directory" &&
+            cd /www/wwwroot/whatsbroad.com/whatsapp_fe &&
+            git reset --hard HEAD &&
+            git checkout main &&
+            git pull origin main &&
+            echo "Install dependencies" &&
+            npm install &&
+            echo "Build project" &&
+            npm run build &&
+            echo "Restarting server" &&
+            pm2 restart whatsbroad.com &&
+            echo "restart nginx" &&
+            sudo systemctl restart nginx
