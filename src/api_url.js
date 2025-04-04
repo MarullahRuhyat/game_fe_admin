@@ -10,6 +10,7 @@ const api_url = {
   genreGame: `${BASE_URL}/api/game-genre/`,
   serviceGame: `${BASE_URL}/api/game-service/`,
   game: `${BASE_URL}/api/game/`,
+  checkToken: `${BASE_URL}/api/auth/check-token`,
 };
 
 export default api_url;

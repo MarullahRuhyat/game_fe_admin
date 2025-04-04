@@ -11,7 +11,8 @@ import { useParams } from "next/navigation";
 export default function EditServiceGamePage() {
   const [serviceData, setServiceData] = useState({
     id: "",
-    name: "",
+    name_eng: "",
+    name_ind: "",
   });
 
   const router = useRouter();
@@ -32,7 +33,8 @@ export default function EditServiceGamePage() {
       if (response.ok) {
         setServiceData({
           id: data.id,
-          name: data.name,
+          name_eng: data.name_eng,
+          name_ind: data.name_ind,
         });
       } else {
         Swal.fire("Error", "Gagal mengambil data service.", "error");
@@ -42,7 +44,15 @@ export default function EditServiceGamePage() {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChangeEng = (e) => {
+    const { name, value } = e.target;
+    setServiceData({
+      ...serviceData,
+      [name]: value,
+    });
+  };
+
+  const handleInputChangeInd = (e) => {
     const { name, value } = e.target;
     setServiceData({
       ...serviceData,
@@ -65,7 +75,8 @@ export default function EditServiceGamePage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: serviceData.name,
+        name_eng: serviceData.name_eng,
+        name_ind: serviceData.name_ind,
       }),
     };
 
@@ -77,10 +88,10 @@ export default function EditServiceGamePage() {
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(updateServiceGame(data));
+        dispatch(updateServiceGame(data.data));
         Swal.fire({
           title: "Berhasil!",
-          text: "Service berhasil diperbarui.",
+          text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
@@ -117,14 +128,32 @@ export default function EditServiceGamePage() {
             htmlFor="name"
             className="block text-sm font-medium text-gray-700"
           >
-            Nama Service
+            Nama Inggris
           </label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={serviceData.name}
-            onChange={handleInputChange}
+            id="name_eng"
+            name="name_eng"
+            value={serviceData.name_eng}
+            onChange={handleInputChangeEng}
+            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Nama Inggris
+          </label>
+          <input
+            type="text"
+            id="name_ind"
+            name="name_ind"
+            value={serviceData.name_ind}
+            onChange={handleInputChangeInd}
             className="mt-2 p-3 w-full border border-gray-300 rounded-md"
             required
           />

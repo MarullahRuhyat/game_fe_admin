@@ -81,10 +81,10 @@ export default function EditGenrePage() {
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(updateGenreGame(data));
+        dispatch(updateGenreGame(data.data));
         Swal.fire({
           title: "Berhasil!",
-          text: "Genre berhasil diperbarui.",
+          text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {

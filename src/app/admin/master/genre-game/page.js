@@ -73,9 +73,10 @@ export default function GenrePage() {
     const url = `${api_url.genreGame}${id}`;
     const response = await fetch(url, requestOptions);
     if (response.ok) {
+      const data = await response.json();
       Swal.fire({
         title: "Berhasil!",
-        text: "Genre berhasil dihapus.",
+        text: data.message["ind"],
         icon: "success",
         confirmButtonText: "OK",
       }).then(() => {

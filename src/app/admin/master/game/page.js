@@ -17,7 +17,7 @@ export default function GamePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -27,9 +27,16 @@ export default function GamePage() {
     (state) => state.genreGame
   );
 
+  const tabs = [
+    { id: 1, title: "All" },
+    { id: 2, title: "Sensitif" },
+    { id: 3, title: "Populer" },
+  ];
+  const [activeTab, setActiveTab] = useState(tabs[0].id);
+
   useEffect(() => {
     if (!isFetchGame) {
-      dispatch(fetchGame());
+      dispatch(fetchGame(router));
     }
     if (!isFetchGenreGame) {
       dispatch(fetchGenreGame());
@@ -52,16 +59,28 @@ export default function GamePage() {
       );
     }
 
+    if (activeTab === 2) {
+      filtered = filtered.filter((game) => game.sensitif_game);
+    } else if (activeTab === 3) {
+      filtered = filtered.filter((game) => game.popular);
+    }
+
     setFilteredGames(filtered);
     setCurrentPage(1);
-  }, [searchQuery, selectedGenre, games]);
+  }, [searchQuery, selectedGenre, games, activeTab]);
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
+  const handleSearch = async (e) => {
+    console.log("kesini");
+
+    // filter juga dengan active tab
+    const query = e.target.value.toLowerCase();
+    await setSearchQuery(query);
   };
 
   const handleFilterGenre = (e) => {
-    setSelectedGenre(e.target.value);
+    // filter juga dengan active tab
+    const genreId = e.target.value;
+    setSelectedGenre(genreId);
   };
 
   const handleDelete = async (id) => {
@@ -100,10 +119,28 @@ export default function GamePage() {
     }
   };
 
+  const handleActiveTab = (tabId) => {
+    setActiveTab(tabId);
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentGames = filteredGames.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
+
+  const getPageRange = () => {
+    const range = [];
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      range.push(i);
+    }
+    return range;
+  };
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -140,6 +177,22 @@ export default function GamePage() {
         </div>
       </div>
 
+      <div className="flex bg-gray-200 px-2 py-1 space-x-1">
+        {tabs.map((tab) => (
+          <div
+            key={tab.id}
+            className={`px-4 py-2 rounded-t-lg cursor-pointer transition-all ${
+              activeTab === tab.id
+                ? "bg-white shadow font-semibold"
+                : "bg-gray-300 text-gray-600"
+            }`}
+            onClick={() => handleActiveTab(tab.id)}
+          >
+            {tab.title}
+          </div>
+        ))}
+      </div>
+
       <div className="overflow-x-auto">
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead className="bg-gray-100">
@@ -147,7 +200,9 @@ export default function GamePage() {
               <th className="px-4 py-2">No</th>
               <th className="px-4 py-2">Nama Game</th>
               <th className="px-4 py-2">Genre</th>
-              <th className="px-4 py-2">Tanggal Rilis</th>
+              <th className="px-4 py-2">Sensitif Game</th>
+              <th className="px-4 py-2">Populer Game</th>
+              <th className="px-4 py-2">Image</th>
               <th className="px-4 py-2">Aksi</th>
             </tr>
           </thead>
@@ -172,7 +227,33 @@ export default function GamePage() {
                     {game.genre.name}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    {game.release_date || "-"}
+                    {game.sensitif_game ? (
+                      <span className="text-white text-[15px] font-semibold bg-red-700 p-1 rounded-lg">
+                        Sensitif
+                      </span>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {game.popular ? (
+                      <span className="text-white text-[15px] font-semibold bg-green-700 p-1 rounded-lg">
+                        Populer
+                      </span>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {game.image ? (
+                      <img
+                        src={api_url.base_url + game.image}
+                        alt={game.name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                    ) : (
+                      "-"
+                    )}
                   </td>
                   <td className="border px-4 py-2 text-center">
                     <button
@@ -207,21 +288,37 @@ export default function GamePage() {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-4 flex justify-center">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`mx-1 px-3 py-2 rounded ${
-                currentPage === page ? "bg-blue-600 text-white" : "bg-gray-300"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="flex justify-end mt-4">
+        {currentPage > 1 && (
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            Previous
+          </button>
+        )}
+        {getPageRange().map((page) => (
+          <button
+            key={page}
+            onClick={() => paginate(page)}
+            className={`px-4 py-2 mx-1 rounded-md shadow ${
+              currentPage === page
+                ? "bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        {currentPage < totalPages && (
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            Next
+          </button>
+        )}
+      </div>
     </div>
   );
 }

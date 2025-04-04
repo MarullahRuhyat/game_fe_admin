@@ -9,14 +9,26 @@ import { addServiceGame } from "@/redux/slice/serviceGameSlice";
 
 export default function CreateServicePage() {
   const [serviceData, setServiceData] = useState({
-    name: "",
+    name_eng: "",
+    name_ind: "",
   });
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleInputChange = (e) => {
+  const handleInputChangeEng = (e) => {
     const { name, value } = e.target;
+    console.log("value", value);
+    serviceData[name] = value;
+    setServiceData({
+      ...serviceData,
+      [name]: value,
+    });
+  };
+
+  const handleInputChangeInd = (e) => {
+    const { name, value } = e.target;
+    serviceData[name] = value;
     setServiceData({
       ...serviceData,
       [name]: value,
@@ -47,10 +59,10 @@ export default function CreateServicePage() {
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(addServiceGame(data));
+        dispatch(addServiceGame(data.data));
         Swal.fire({
           title: "Berhasil!",
-          text: "Service berhasil ditambahkan.",
+          text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
@@ -78,6 +90,8 @@ export default function CreateServicePage() {
     router.push("/admin/master/service-game");
   };
 
+  console.log("serviceData", serviceData);
+
   return (
     <div className="flex-1 flex flex-col">
       <h1 className="text-2xl font-bold mb-4">Buat Service Baru</h1>
@@ -87,14 +101,32 @@ export default function CreateServicePage() {
             htmlFor="name"
             className="block text-sm font-medium text-gray-700"
           >
-            Nama Service
+            Nama Inggris
           </label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={serviceData.name}
-            onChange={handleInputChange}
+            id="name_eng"
+            name="name_eng"
+            value={serviceData.name_eng}
+            onChange={handleInputChangeEng}
+            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Nama Indonesia
+          </label>
+          <input
+            type="text"
+            id="name_ind"
+            name="name_ind"
+            value={serviceData.name_ind}
+            onChange={handleInputChangeInd}
             className="mt-2 p-3 w-full border border-gray-300 rounded-md"
             required
           />

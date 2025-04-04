@@ -2,55 +2,68 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 import api_url from "@/api_url";
 import { fetchGenreGame } from "@/redux/action/genreGameAction";
 import { fetchServiceGame } from "@/redux/action/serviceGameAction";
 import { updateGame } from "@/redux/slice/gameSlice";
 
 export default function EditGamePage() {
-  const [formData, setFormData] = useState({
-    id: "",
-    name: "",
-    genre: "",
-    release_date: "",
-    game_services: [],
-  });
-
-  const router = useRouter();
   const { id } = useParams();
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const { genreGameList } = useSelector((state) => state.genreGame);
-  const { serviceList } = useSelector((state) => state.service);
+  const { genreGame, isFetchGenreGame } = useSelector(
+    (state) => state.genreGame
+  );
+  const { serviceGame, isFetchServiceGame } = useSelector(
+    (state) => state.serviceGame
+  );
+
+  const [formData, setFormData] = useState({
+    name: "",
+    genre: "",
+    game_services: [],
+    sensitif_game: 0,
+    popular: 0,
+    image: null,
+  });
 
   useEffect(() => {
-    dispatch(fetchGenreGame());
-    dispatch(fetchServiceGame());
-    if (id) fetchGame(id);
-  }, [dispatch, id]);
+    // Ambil data game berdasarkan ID
+    const fetchGame = async () => {
+      try {
+        const res = await fetch(`${api_url.game}${id}`);
+        const data = await res.json();
+        console.log("data", data);
 
-  const fetchGame = async (id) => {
-    try {
-      const res = await fetch(`${api_url.game}${id}/`);
-      const data = await res.json();
-
-      if (res.ok) {
-        setFormData({
-          id: data.id,
-          name: data.name,
-          genre: data.genre,
-          release_date: data.release_date || "",
-          game_services: data.game_services || [],
-        });
-      } else {
-        Swal.fire("Error", "Gagal mengambil data game", "error");
+        if (res.ok) {
+          setFormData({
+            name: data.name,
+            genre: data.genre.id,
+            game_services: data.game_services || [],
+            sensitif_game: data.sensitif_game ? 1 : 0,
+            popular: data.popular ? 1 : 0,
+            image: null, // Tidak menampilkan gambar lama
+          });
+        } else {
+          Swal.fire("Error", "Gagal mengambil data game.", "error");
+          router.push("/admin/master/game");
+        }
+      } catch (error) {
+        Swal.fire("Error", "Terjadi kesalahan.", "error");
       }
-    } catch (error) {
-      Swal.fire("Error", "Terjadi kesalahan.", "error");
+    };
+
+    fetchGame();
+    if (!isFetchGenreGame) {
+      dispatch(fetchGenreGame());
     }
-  };
+    if (!isFetchServiceGame) {
+      dispatch(fetchServiceGame());
+    }
+  }, [id, dispatch, router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,14 +75,12 @@ export default function EditGamePage() {
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
+    const service = serviceGame.find((item) => item.id == value);
     setFormData((prev) => {
       const updatedServices = checked
-        ? [...prev.game_services, value]
-        : prev.game_services.filter((item) => item !== value);
-      return {
-        ...prev,
-        game_services: updatedServices,
-      };
+        ? [...prev.game_services, service]
+        : prev.game_services.filter((item) => item.id !== service.id);
+      return { ...prev, game_services: updatedServices };
     });
   };
 
@@ -77,35 +88,42 @@ export default function EditGamePage() {
     e.preventDefault();
     const token = Cookies.get("token");
 
+    if (formData.game_services.length === 0) {
+      Swal.fire("Gagal", "Pilih minimal satu service game.", "error");
+      return;
+    }
+
+    const formDataFile = new FormData();
+    formDataFile.append("name", formData.name);
+    formDataFile.append("genre", formData.genre);
+    formDataFile.append(
+      "game_services",
+      JSON.stringify(formData.game_services)
+    );
+    formDataFile.append("sensitif_game", formData.sensitif_game);
+    formDataFile.append("popular", formData.popular);
+    if (formData.image) formDataFile.append("image", formData.image);
+
     try {
-      const res = await fetch(`${api_url.game}${formData.id}/`, {
+      const res = await fetch(`${api_url.game}${id}/`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        headers: { Authorization: `Bearer ${token}` },
+        body: formDataFile,
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        dispatch(updateGame(data));
-        Swal.fire("Berhasil", "Game berhasil diperbarui.", "success").then(
-          () => {
-            router.push("/admin/master/game");
-          }
-        );
+        dispatch(updateGame(data.data));
+        Swal.fire("Berhasil!", data.message["ind"], "success").then(() => {
+          router.push("/admin/master/game");
+        });
       } else {
-        Swal.fire("Gagal", "Gagal memperbarui game.", "error");
+        Swal.fire("Gagal", "Gagal mengupdate game.", "error");
       }
     } catch (error) {
       Swal.fire("Error", "Terjadi kesalahan.", "error");
     }
-  };
-
-  const handleBack = () => {
-    router.push("/admin/master/game");
   };
 
   return (
@@ -134,10 +152,10 @@ export default function EditGamePage() {
             value={formData.genre}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-gray-300 rounded"
+            className="w-full p-3 border border-gray-300 rounded bg-white"
           >
             <option value="">Pilih Genre</option>
-            {genreGameList.map((genre) => (
+            {genreGame.map((genre) => (
               <option key={genre.id} value={genre.id}>
                 {genre.name}
               </option>
@@ -146,32 +164,74 @@ export default function EditGamePage() {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Tanggal Rilis</label>
+          <label className="block mb-1 font-medium">Image</label>
           <input
-            type="date"
-            name="release_date"
-            value={formData.release_date}
-            onChange={handleChange}
+            type="file"
+            name="image"
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, image: e.target.files[0] }))
+            }
             className="w-full p-3 border border-gray-300 rounded"
           />
+          {formData.image && (
+            <p className="text-gray-500 text-sm mt-1">
+              Gambar akan diperbarui.
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Game Services</label>
+          <label className="block mb-1 font-medium">Service Game </label>
           <div className="flex flex-wrap gap-3">
-            {serviceList.map((service) => (
+            {serviceGame.map((service) => (
               <label key={service.id} className="inline-flex items-center">
                 <input
                   type="checkbox"
-                  value={service.name}
-                  checked={formData.game_services.includes(service.name)}
+                  value={service.id}
+                  checked={formData.game_services.some(
+                    (s) => s.id === service.id
+                  )}
                   onChange={handleCheckboxChange}
                   className="mr-2"
                 />
-                {service.name}
+                {service.name_eng}
               </label>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">Sensitif Game</label>
+          <input
+            type="checkbox"
+            value="1"
+            checked={formData.sensitif_game === 1}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                sensitif_game: e.target.checked ? 1 : 0,
+              }))
+            }
+            className="mr-2"
+          />
+          Sensitif
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium"> Populer Game</label>
+          <input
+            type="checkbox"
+            value="1"
+            checked={formData.popular === 1}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                popular: e.target.checked ? 1 : 0,
+              }))
+            }
+            className="mr-2"
+          />
+          Populer
         </div>
 
         <div className="flex gap-2">
@@ -183,7 +243,7 @@ export default function EditGamePage() {
           </button>
           <button
             type="button"
-            onClick={handleBack}
+            onClick={() => router.push("/admin/master/game")}
             className="py-2 px-6 bg-gray-600 text-white rounded hover:bg-gray-700"
           >
             Kembali

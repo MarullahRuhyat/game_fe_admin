@@ -74,9 +74,10 @@ export default function ServicePage() {
     const url = `${api_url.serviceGame}${id}`;
     const response = await fetch(url, requestOptions);
     if (response.ok) {
+      const data = await response.json();
       Swal.fire({
         title: "Berhasil!",
-        text: "Service berhasil dihapus.",
+        text: data.message["ind"],
         icon: "success",
         confirmButtonText: "OK",
       }).then(() => {
@@ -140,7 +141,8 @@ export default function ServicePage() {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Nama Service</th>
+              <th className="px-4 py-2">Nama Inggris</th>
+              <th className="px-4 py-2">Nama Indonesia</th>
               <th className="px-4 py-2">Aksi</th>
             </tr>
           </thead>
@@ -161,8 +163,12 @@ export default function ServicePage() {
                     {indexOfFirstItem + index + 1}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    {service.name}
+                    {service.name_eng}
                   </td>
+                  <td className="border px-4 py-2 text-center">
+                    {service.name_ind}
+                  </td>
+
                   <td className="border px-4 py-2 text-center">
                     <button
                       onClick={() =>

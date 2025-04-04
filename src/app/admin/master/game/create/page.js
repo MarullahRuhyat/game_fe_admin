@@ -13,8 +13,10 @@ export default function CreateGamePage() {
   const [formData, setFormData] = useState({
     name: "",
     genre: "",
-    release_date: "",
     game_services: [],
+    sensitif_game: 0,
+    popular: 0,
+    image: "",
   });
 
   const dispatch = useDispatch();
@@ -44,8 +46,12 @@ export default function CreateGamePage() {
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
+    console.log("value", value);
+    console.log("serviceGame", serviceGame);
+
     // sevice by value
-    const service = serviceGame.find((item) => item.name === value);
+    const service = serviceGame.find((item) => item.id == value);
+    console.log("service", service);
     setFormData((prev) => {
       const updatedServices = checked
         ? [...prev.game_services, service]
@@ -57,29 +63,72 @@ export default function CreateGamePage() {
     });
   };
 
+  const handleSensitifChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      sensitif_game: checked ? value : 0,
+    }));
+  };
+
+  const handlePopularChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      popular: checked ? value : 0,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = Cookies.get("token");
+
+    // cek service game jika [] kosong
+    if (formData.game_services.length === 0) {
+      Swal.fire("Gagal", "Pilih minimal satu service game.", "error");
+      return;
+    }
+    // handle file
+
+    // confert to string game_services
+
+    const formDataFile = new FormData();
+    formDataFile.append("name", formData.name);
+    formDataFile.append("genre", formData.genre);
+    formDataFile.append(
+      "game_services",
+      JSON.stringify(formData.game_services)
+    );
+    formDataFile.append("sensitif_game", formData.sensitif_game);
+    formDataFile.append("popular", formData.popular);
+    formDataFile.append("image", formData.image);
+    console.log("formDataFile", formDataFile);
 
     try {
       const res = await fetch(api_url.game, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: formDataFile,
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        dispatch(addGame(data));
-        Swal.fire("Berhasil!", "Game berhasil ditambahkan.", "success").then(
-          () => {
-            router.push("/admin/master/game");
-          }
+        dispatch(addGame(data.data));
+        Swal.fire("Berhasil!", data.message["ind"], "success").then(() => {
+          router.push("/admin/master/game");
+        });
+      } else if (res.status === 403 || res.status === 401) {
+        Swal.fire(
+          "Error",
+          "Sesi telah berakhir. Silakan masuk kembali.",
+          "error"
         );
+        Cookies.remove("token");
+        router.push("/auth/login");
+        return;
       } else {
         Swal.fire("Gagal", "Gagal menambahkan game.", "error");
       }
@@ -132,31 +181,67 @@ export default function CreateGamePage() {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Tanggal Rilis</label>
+          <label className="block mb-1 font-medium">Image</label>
           <input
-            type="date"
-            name="release_date"
-            value={formData.release_date}
-            onChange={handleChange}
+            type="file"
+            name="image"
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                image: e.target.files[0],
+              }))
+            }
             className="w-full p-3 border border-gray-300 rounded"
           />
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Game Services</label>
+          <label className="block mb-1 font-medium">Service Game </label>
           <div className="flex flex-wrap gap-3">
             {serviceGame.map((service) => (
               <label key={service.id} className="inline-flex items-center">
                 <input
                   type="checkbox"
-                  value={service.name}
+                  value={service.id}
                   checked={formData.game_services.includes(service)}
                   onChange={handleCheckboxChange}
                   className="mr-2"
                 />
-                {service.name}
+                {service.name_eng}
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">Sensitif Game</label>
+          <div className="flex flex-wrap gap-3">
+            <label key="sensitif_game" className="inline-flex items-center">
+              <input
+                type="checkbox"
+                value="1"
+                checked={formData.sensitif_game === "1"}
+                onChange={handleSensitifChange}
+                className="mr-2"
+              />
+              Sensitif
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium"> Populer Game</label>
+          <div className="flex flex-wrap gap-3">
+            <label key="popular" className="inline-flex items-center">
+              <input
+                type="checkbox"
+                value="1"
+                checked={formData.popular === "1"}
+                onChange={handlePopularChange}
+                className="mr-2"
+              />
+              Populer
+            </label>
           </div>
         </div>
 

@@ -48,10 +48,10 @@ export default function CreateGenrePage() {
       const data = await response.json();
 
       if (response.ok) {
-        dispatch(addGenreGame(data));
+        dispatch(addGenreGame(data.data));
         Swal.fire({
           title: "Berhasil!",
-          text: "Genre berhasil ditambahkan.",
+          text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
