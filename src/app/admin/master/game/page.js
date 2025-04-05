@@ -28,7 +28,7 @@ export default function GamePage() {
   );
 
   const tabs = [
-    { id: 1, title: "All" },
+    { id: 1, title: "Semua" },
     { id: 2, title: "Sensitif" },
     { id: 3, title: "Populer" },
   ];
@@ -70,8 +70,6 @@ export default function GamePage() {
   }, [searchQuery, selectedGenre, games, activeTab]);
 
   const handleSearch = async (e) => {
-    console.log("kesini");
-
     // filter juga dengan active tab
     const query = e.target.value.toLowerCase();
     await setSearchQuery(query);
@@ -177,14 +175,14 @@ export default function GamePage() {
         </div>
       </div>
 
-      <div className="flex bg-gray-200 px-2 py-1 space-x-1">
+      <div className="flex  mt-4 space-x-4 text-lg">
         {tabs.map((tab) => (
           <div
             key={tab.id}
-            className={`px-4 py-2 rounded-t-lg cursor-pointer transition-all ${
+            className={`pb-2 cursor-pointer transition-all border-b-2 ${
               activeTab === tab.id
-                ? "bg-white shadow font-semibold"
-                : "bg-gray-300 text-gray-600"
+                ? "text-black border-black font-semibold"
+                : "text-gray-500 border-transparent hover:text-black"
             }`}
             onClick={() => handleActiveTab(tab.id)}
           >
@@ -193,7 +191,7 @@ export default function GamePage() {
         ))}
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-2">
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
