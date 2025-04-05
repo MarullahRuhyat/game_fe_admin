@@ -74,8 +74,6 @@ export default function UserLayout({ children }) {
     router.push("/auth/login");
   };
 
-  console.log("path", path);
-
   return (
     <>
       {authStatus == "checking" ? (
@@ -102,12 +100,9 @@ export default function UserLayout({ children }) {
                       <i className="fa fa-times "></i>
                     </button>
                   </div>
-                  <img
-                    src="/static/logo.png"
-                    className=" h-48 mx-auto ml-[-30px] mt-[-50px]"
-                  />
+                  <h1 className="text-3xl font-bold text-white">Admin Panel</h1>
                 </div>
-                <ul className="flex z-50 flex-col space-y-3 font-semibold overflow-y-auto h-[calc(100vh-200px)] scrollbar-hide mt-[-70px]">
+                <ul className="flex z-50 flex-col space-y-3 font-semibold overflow-y-auto h-[calc(100vh-200px)] scrollbar-hide ">
                   <li>
                     <Link
                       href="/admin"
@@ -220,14 +215,14 @@ export default function UserLayout({ children }) {
                 </ul>
               </div>
               {/* contact suppot */}
-              <div className=" border-t-2 h-[100px] m-2 rounded-lg bg-white text-blue-600 flex flex-col">
+              {/* <div className=" border-t-2 h-[100px] m-2 rounded-lg bg-white text-blue-600 flex flex-col">
                 <h3 className="font-bold text-xl text-center">
                   Contact Support
                 </h3>
                 <p className="text-center font-lg font-semibold">
                   whatsbroad.com@gmail.com
                 </p>
-              </div>
+              </div> */}
             </section>
 
             <section className="flex-1 bg-white lg:mt-2 lg:rounded-tl-[50px]  flex flex-col overflow-x-auto">
