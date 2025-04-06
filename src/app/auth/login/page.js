@@ -58,7 +58,7 @@ export default function LoginPage() {
         router.push("/admin");
       });
     } catch (error) {
-      console.error("Login failed", error);
+      console.log("Login failed", error);
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import api_url from "@/api_url";
 import Cookies from "js-cookie";
 import LoadingScreen from "@/component/loadingComponent";
+import Swal from "sweetalert2";
 
 export default function UserLayout({ children }) {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function UserLayout({ children }) {
           throw new Error("Token expired");
         }
       } catch (error) {
+        Swal.fire("Error", "Sesi telah habis. Silakan login kembali.", "error");
         Cookies.remove("token");
         router.push("/auth/login");
       }

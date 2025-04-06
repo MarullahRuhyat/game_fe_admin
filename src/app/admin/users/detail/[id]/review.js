@@ -5,15 +5,15 @@ import api_url from "@/api_url";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 
-export default function Transaction({ user }) {
-  const [transaction, setTransaction] = useState([]);
+export default function Review({ user }) {
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [pageActive, setPageActive] = useState(1);
   const pageSize = 10;
 
-  async function fetchTransaction(url = null) {
+  async function fetchReviews(url = null) {
     setLoading(true);
     const token = Cookies.get("token");
     if (!token) {
@@ -31,7 +31,7 @@ export default function Transaction({ user }) {
     };
     const queryString = new URLSearchParams(params).toString();
     if (url == null) {
-      url = `${api_url.transaction}?${queryString}`;
+      url = `${api_url.review}?${queryString}`;
     }
 
     try {
@@ -56,7 +56,6 @@ export default function Transaction({ user }) {
         const url = data.previous;
         const parsedUrl = new URL(url);
         const page = parsedUrl.searchParams.get("page");
-        console.log("page", page);
         if (page === null) {
           setPageActive(2);
         } else {
@@ -77,12 +76,11 @@ export default function Transaction({ user }) {
         const page = parsedUrl.searchParams.get("page");
         setPageActive(parseInt(page) - 1);
       }
-      setTransaction(data.results);
+      setReviews(data.results);
       setNextPage(data.next);
       setPrevPage(data.previous);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching transaction:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -92,92 +90,68 @@ export default function Transaction({ user }) {
     }
   }
   useEffect(() => {
-    fetchTransaction();
+    fetchReviews();
   }, []);
 
   const handlePagination = (url) => {
-    fetchTransaction(url);
+    fetchReviews(url);
   };
-
-  console.log("transaction", transaction);
-  console.log("user", user);
 
   return (
     <>
-      <div className="overflow-x-auto mt-4">
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Order ID</th>
-              <th className="px-4 py-2">Jenis Transaksi</th>
-              <th className="px-4 py-2">Nama Produk</th>
-              <th className="px-4 py-2">Jumlah</th>
-              <th className="px-4 py-2">Total Harga</th>
-              <th className="px-4 py-2">Tanggal Transaksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Data transaksi */}
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Memuat transaksi...
-                </td>
-              </tr>
-            ) : transaction.length > 0 ? (
-              transaction.map((transaction, index) => (
-                <tr key={transaction.id}>
-                  <td className="border px-4 py-2 text-center">
-                    {(pageActive - 1) * pageSize + index + 1}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {transaction.order_id}
-                  </td>
-                  <td className="border px-4 py-2 text-center ">
-                    {transaction.user != user.id ? "Penjualan" : "Pembelian"}
-                  </td>
-                  <td className="border px-4 py-2 text-center w-1/4">
-                    {transaction.product.name}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {transaction.quantity}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {/* format rupiah */}
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                    }).format(transaction.total_price)}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {new Date(transaction.created_at).toLocaleDateString(
-                      "id-ID",
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      }
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Tidak ada transaksi
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="bg-white border shadow-lg rounded-lg p-6 mt-8">
+        <h3 className="text-lg font-semibold text-gray-800">Ulasan</h3>
+
+        {loading ? (
+          <p className="text-gray-500 mt-4">Memuat ulasan...</p>
+        ) : reviews.length === 0 ? (
+          <p className="text-gray-500 mt-4">Belum ada ulasan.</p>
+        ) : (
+          <div className="mt-4 space-y-6">
+            {reviews.map((review, index) => (
+              <div key={index} className="border-b pb-4">
+                <div className="flex items-center">
+                  <img
+                    src={
+                      review.user.image
+                        ? `${api_url.base_url}${review.user.image}`
+                        : review.user.social_image
+                    }
+                    alt={review.user.name}
+                    className="w-12 h-12 rounded-full object-cover mr-4"
+                    loading="lazy"
+                  />
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">
+                      {review.user.name}
+                    </h4>
+                    <p className="text-sm text-gray-500">{review.user.email}</p>
+                  </div>
+                </div>
+
+                {/* Rating */}
+                <div className="flex items-center mt-2 text-yellow-500">
+                  {[...Array(5)].map((_, i) => (
+                    <i
+                      key={i}
+                      className={`fa fa-star ${
+                        i < review.rating ? "text-yellow-500" : "text-gray-300"
+                      }`}
+                    ></i>
+                  ))}
+                  <span className="ml-2 text-sm text-gray-500">
+                    ({review.rating})
+                  </span>
+                </div>
+
+                {/* Comment */}
+                <p className="mt-2 text-gray-700">{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
       <div className="flex justify-center mt-4">
         {prevPage && (
           <button

@@ -11,6 +11,7 @@ export default function DetailPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [seller, setSeller] = useState(null);
 
   useEffect(() => {
     // fetch data user berdasarkan id
@@ -21,10 +22,14 @@ export default function DetailPage() {
         console.log(data);
 
         if (res.ok) {
+          console.log("data.data", data);
+
           setUser(data.data);
+          setSeller(data.seller);
         } else {
-          Swal.fire("Error", "Gagal mengambil data user.", "error");
-          router.push("/admin/users");
+          Swal.fire("Error", data.message["ind"], "error").then(() => {
+            router.push("/admin/users");
+          });
         }
       } catch (error) {
         Swal.fire("Error", "Terjadi kesalahan.", "error");
@@ -37,9 +42,10 @@ export default function DetailPage() {
     return <div>Loading...</div>;
   }
 
-  if (user.is_seller) {
-    return <Seller />;
+  if (user?.is_seller) {
+    return <Seller user={user} seller={seller} />;
   }
-
-  return <User />;
+  if (user != null) {
+    return <User user={user} />;
+  }
 }

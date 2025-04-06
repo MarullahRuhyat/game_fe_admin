@@ -43,8 +43,6 @@ export default function UserPage() {
       setNextPage(data.next);
       setPrevPage(data.previous);
 
-      console.log(data);
-
       if (data.next === null && data.previous === null) {
         setPageActive(1);
       }
@@ -203,7 +201,7 @@ export default function UserPage() {
                       : "User"}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    {user.verify ? (
+                    {user.is_active ? (
                       <span className="bg-green-500 text-white px-2 py-1 rounded-md">
                         Terverifikasi
                       </span>

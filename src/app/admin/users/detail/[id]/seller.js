@@ -3,13 +3,16 @@ import React, { use, useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Product from "./product";
 import Transaction from "./transaction";
+import Review from "./review";
+import api_url from "@/api_url";
 
-export default function Seller() {
+export default function Seller({ user }) {
   const { id } = useParams();
   const router = useRouter();
   const [tabs, setTabs] = useState([
     { id: "Produk", title: "Produk", count: 0 },
     { id: "Transaksi", title: "Transaksi", count: 0 },
+    { id: "Ulasan", title: "Ulasan", count: 0 },
   ]);
   const [activeTab, setActiveTab] = useState(tabs[0].id);
   const handleActiveTab = (tabId) => {
@@ -33,13 +36,17 @@ export default function Seller() {
         {/* Total produk */}
         <div className="bg-white border  shadow-lg rounded-lg p-6 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-800">Total Produk</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">10</p>
+          <p className="text-3xl font-bold text-gray-900 mt-4">
+            {user.seller.total_products}
+          </p>
         </div>
 
         {/* Total ulasan */}
         <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-800">Total Ulasan</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">10</p>
+          <p className="text-3xl font-bold text-gray-900 mt-4">
+            {user.seller.total_reviews}
+          </p>
         </div>
 
         {/* Total Transaksi */}
@@ -53,7 +60,9 @@ export default function Seller() {
         {/* saldo */}
         <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-800">Saldo</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">Rp 10.000.000</p>
+          <p className="text-3xl font-bold text-gray-900 mt-4">
+            Rp {user.saldo}
+          </p>
         </div>
 
         {/* Rating bintang */}
@@ -62,7 +71,7 @@ export default function Seller() {
             Rating Bintang
           </h3>
           <div className="flex mt-4 ">
-            <p className="text-3xl font-bold  ">4.5</p>
+            <p className="text-3xl font-bold  ">{user.seller.average_rating}</p>
             <div className="flex items-center  text-[#ffb600]">
               <span className=" text-2xl ml-2">
                 <i className="fa fa-star"></i>
@@ -75,10 +84,20 @@ export default function Seller() {
         <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-800">Level</h3>
           {/* icon piala */}
-          <div className="flex mt-4 ">
-            <span className="text-3xl font-bold  ">Silver</span>
-            <div className="flex items-center  text-gray-400">
-              <span className=" text-2xl ml-2">
+          <div className="flex mt-4">
+            <span className="text-3xl font-bold">{user.seller_level}</span>
+            <div
+              className={`flex items-center ${
+                user.seller_level === "Bronze"
+                  ? "text-[#cd7f32]"
+                  : user.seller_level === "Silver"
+                  ? "text-[#c0c0c0]"
+                  : user.seller_level === "Gold"
+                  ? "text-[#ffd700]"
+                  : "text-gray-400"
+              }`}
+            >
+              <span className="text-2xl ml-2">
                 <i className="fa fa-trophy"></i>
               </span>
             </div>
@@ -93,14 +112,18 @@ export default function Seller() {
         </h3>
         <div className="flex items-center mt-4">
           <img
-            src="https://assets.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p3/70/2024/09/04/Cara-Ganti-Background-ML-Mobile-Legends-Terbaru-dan-Resikonya-1115390484.jpg"
+            src={
+              user.image
+                ? `${api_url.base_url}${user.image}`
+                : user.social_image
+            }
             alt="Logo Toko - Jual Item Mobile Legends"
             className="w-16 h-16 rounded-full object-cover mr-4"
             loading="lazy"
           />
           <div>
-            <h4 className="text-xl font-semibold text-gray-900">Nama Toko</h4>
-            <p className="text-gray-600">email@gmail.com</p>
+            <h4 className="text-xl font-semibold text-gray-900">{user.name}</h4>
+            <p className="text-gray-600">{user.email}</p>
           </div>
         </div>
       </div>
@@ -120,10 +143,13 @@ export default function Seller() {
         ))}
       </div>
 
-      {activeTab === "Produk" && <Product />}
+      {activeTab === "Produk" && <Product user={user} />}
 
       {/* table transaksi */}
-      {activeTab === "Transaksi" && <Transaction />}
+      {activeTab === "Transaksi" && <Transaction user={user} />}
+
+      {/* ulasan */}
+      {activeTab === "Ulasan" && <Review user={user} />}
     </div>
   );
 }

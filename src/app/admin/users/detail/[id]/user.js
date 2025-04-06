@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import Product from "./product";
 import Transaction from "./transaction";
 
-export default function User() {
+export default function User({ user }) {
   const { id } = useParams();
   const router = useRouter();
 
@@ -32,13 +32,13 @@ export default function User() {
             loading="lazy"
           />
           <div>
-            <h4 className="text-xl font-semibold text-gray-900">Nama Toko</h4>
-            <p className="text-gray-600">email@gmail.com</p>
+            <h4 className="text-xl font-semibold text-gray-900">{user.name}</h4>
+            <p className="text-gray-600">{user.email}</p>
           </div>
         </div>
       </div>
 
-      <Transaction />
+      <Transaction user={user} />
     </div>
   );
 }
