@@ -134,6 +134,37 @@ export default function UserLayout({ children }) {
                       <div className="ml-2 flex-1 text-lg">Dashboard</div>
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/admin/report-problem"
+                      className={`flex items-center px-4 py-3 hover:bg-white hover:text-purple-700 rounded-lg transition-colors ${
+                        path == "/admin/report-problem"
+                          ? "bg-white text-purple-700"
+                          : ""
+                      }`}
+                      onClick={() => handleSetPath("/admin/report-problem")}
+                    >
+                      <div>
+                        <svg
+                          fill="currentColor"
+                          width="25"
+                          height="25"
+                          clipRule="evenodd"
+                          fillRule="evenodd"
+                          strokeLinejoin="round"
+                          strokeMiterlimit="2"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="m11.6 11c0-.552-.448-1-1-1-1.655 0-4.945 0-6.6 0-.552 0-1 .448-1 1v9c0 .552.448 1 1 1h6.6c.552 0 1-.448 1-1 0-2.092 0-6.908 0-9zm9.4 6c0-.552-.448-1-1-1h-6c-.538 0-1 .477-1 1v3c0 .552.448 1 1 1h6c.552 0 1-.448 1-1zm0-13c0-.552-.448-1-1-1-1.537 0-4.463 0-6 0-.552 0-1 .448-1 1v9.6c0 .552.448 1 1 1h6c.552 0 1-.448 1-1 0-2.194 0-7.406 0-9.6zm-9.4 0c0-.552-.448-1-1-1-1.655 0-4.945 0-6.6 0-.552 0-1 .448-1 1v3.6c0 .552.448 1 1 1h6.6c.552 0 1-.448 1-1 0-1.017 0-2.583 0-3.6z"
+                            fillRule="nonzero"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-2 flex-1 text-lg">Laporan Masalah</div>
+                    </Link>
+                  </li>
 
                   <li>
                     <Link
@@ -163,6 +194,72 @@ export default function UserLayout({ children }) {
                       </div>
                       <div className="ml-2 flex-1 text-lg">Pengguna</div>
                     </Link>
+                  </li>
+                  <li>
+                    <div
+                      onClick={() => handleDropdown("request")}
+                      className={`flex items-center px-4 py-3 hover:bg-white hover:text-purple-700 rounded-lg transition-colors cursor-pointer ${
+                        path.includes("/admin/master")
+                          ? "bg-white text-purple-700"
+                          : ""
+                      }`}
+                    >
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="25"
+                          height="25"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M13 3a9 9 0 1 0 6.36 15.36l1.42 1.42A11 11 0 1 1 13 1v2zm0 4v5.27l4.15 2.48-.77 1.29L11 13V7h2z" />
+                        </svg>
+                      </div>
+                      <div
+                        className={`flex ml-2 flex-1  flex-row justify-between`}
+                      >
+                        <div className="">Permohonan</div>
+                        <i
+                          className={`fa fa-chevron-down transition-transform ${
+                            isDropdownOpen == "request" ? "rotate-180" : ""
+                          }`}
+                        ></i>
+                      </div>
+                    </div>
+                    {isDropdownOpen == "request" && (
+                      <ul className="flex flex-col space-y-2 pl-6 mt-1">
+                        <li>
+                          <Link
+                            href="/admin/request/withdraw"
+                            className={`flex items-center px-4 py-3 hover:bg-white hover:text-purple-700 rounded-lg transition-colors ${
+                              path === "/admin/request/withdraw"
+                                ? "bg-white text-purple-700"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleSetPath("/admin/request/withdraw")
+                            }
+                          >
+                            <div className="ml-2 flex-1">Tarik saldo</div>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/admin/request/seller"
+                            className={`flex items-center px-4 py-3 hover:bg-white hover:text-purple-700 rounded-lg transition-colors ${
+                              path === "/admin/request/seller"
+                                ? "bg-white text-purple-700"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleSetPath("/admin/request/seller")
+                            }
+                          >
+                            <div className="ml-2 flex-1">Penjual</div>
+                          </Link>
+                        </li>
+                      </ul>
+                    )}
                   </li>
 
                   <li>

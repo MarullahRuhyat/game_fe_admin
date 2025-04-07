@@ -26,5 +26,10 @@ ChartJS.register(
 );
 
 export default function UserPage() {
-  return <div className=" p-2"></div>;
+  return (
+    <div className="container">
+      <h1>Coming Soon</h1>
+      <p>Halaman ini akan segera hadir. Terima kasih atas kesabaran Anda.</p>
+    </div>
+  );
 }

@@ -86,7 +86,7 @@ export default function Transaction({ user }) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Terjadi kesalahan saat mengambil data produk.",
+        text: "Terjadi kesalahan saat mengambil data transaksi.",
       });
       setLoading(false);
     }

@@ -17,6 +17,7 @@ const api_url = {
   product: `${BASE_URL}/api/product/`,
   transaction: `${BASE_URL}/api/transaction/`,
   review: `${BASE_URL}/api/review/`,
+  withdraw: `${BASE_URL}/api/withdraw/`,
 };
 
 export default api_url;

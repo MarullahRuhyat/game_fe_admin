@@ -1,0 +1,230 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import api_url from "@/api_url";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
+
+export default function WithdrawPage() {
+  const router = useRouter();
+
+  const [withdraws, setWithdraws] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
+  const [pageActive, setPageActive] = useState(1);
+  const [searchName, setSearchName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
+
+  const fetchWithdraws = async (url = null) => {
+    setLoading(true);
+    const token = Cookies.get("token");
+    if (!token) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Anda tidak memiliki akses, silahkan login",
+      });
+      router.push("/login");
+      return;
+    }
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+    let query = `?page=${pageActive}&page_size=${pageSize}`;
+    if (searchName) {
+      query += `&search=${encodeURIComponent(searchName)}`;
+    }
+
+    if (!url) {
+      url = `${api_url.withdraw}${query}`;
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: "GET",
+        headers: headers,
+      });
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await res.json();
+      if (data.next === null && data.previous === null) {
+        setPageActive(1);
+      }
+      if (data.next === null && data.previous !== null) {
+        const url = data.previous;
+        const parsedUrl = new URL(url);
+        const page = parsedUrl.searchParams.get("page");
+        if (page === null) {
+          setPageActive(2);
+        } else {
+          setPageActive(parseInt(page) + 1);
+        }
+      }
+      if (data.next !== null && data.previous === null) {
+        const url = data.next;
+        const parsedUrl = new URL(url);
+        const page = parsedUrl.searchParams.get("page");
+
+        setPageActive(parseInt(page) - 1);
+      }
+
+      if (data.next !== null && data.previous !== null) {
+        const url = data.next;
+        const parsedUrl = new URL(url);
+        const page = parsedUrl.searchParams.get("page");
+        setPageActive(parseInt(page) - 1);
+      }
+
+      setWithdraws(data.results);
+      setNextPage(data.next);
+      setPrevPage(data.previous);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: "Tidak bisa mengambil data withdraw",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWithdraws();
+  }, [pageSize, pageActive, searchName]);
+
+  const handleSearchChange = (e) => {
+    setSearchName(e.target.value);
+    setPageActive(1);
+  };
+
+  const handlePageSizeChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val > 0) {
+      setPageSize(val);
+      setPageActive(1);
+    }
+  };
+
+  const handlePagination = (url) => {
+    setLoading(true);
+    fetchWithdraws(url);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">Daftar Penarikan Saldo</h2>
+      <div className="flex items-center justify-between my-4">
+        <select
+          value={pageSize}
+          onChange={handlePageSizeChange}
+          className="px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
+        >
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder="Cari nama pengguna..."
+          value={searchName}
+          onChange={handleSearchChange}
+          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+        />
+      </div>
+
+      <div className="overflow-x-auto mt-2">
+        <table className="table-auto w-full border-collapse border border-gray-300">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2">No</th>
+              <th className="px-4 py-2">Nama Pengguna</th>
+              <th className="px-4 py-2">Jumlah</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="text-center py-4 text-gray-500">
+                  Memuat data...
+                </td>
+              </tr>
+            ) : withdraws.length > 0 ? (
+              withdraws.map((withdraw, index) => (
+                <tr key={withdraw.id}>
+                  <td className="border px-4 py-2 text-center">
+                    {(pageActive - 1) * pageSize + index + 1}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {withdraw.user.name}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    Rp {parseFloat(withdraw.amount).toLocaleString("id-ID")}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {withdraw.status === "success" ? (
+                      <span className="bg-green-500 text-white px-2 py-1 rounded-md">
+                        Berhasil
+                      </span>
+                    ) : withdraw.status === "pending" ? (
+                      <span className="bg-yellow-500 text-white px-2 py-1 rounded-md">
+                        Pending
+                      </span>
+                    ) : (
+                      <span className="bg-red-500 text-white px-2 py-1 rounded-md">
+                        Gagal
+                      </span>
+                    )}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {new Date(withdraw.created_at).toLocaleDateString("id-ID")}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center py-4 text-gray-500">
+                  Tidak ada data penarikan
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-end mt-4">
+        {prevPage && (
+          <button
+            onClick={() => handlePagination(prevPage)}
+            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            Prev
+          </button>
+        )}
+        <button
+          key={pageActive}
+          className="px-4 py-2 mx-1 rounded-md shadow bg-blue-600 text-white"
+        >
+          {pageActive}
+        </button>
+        {nextPage && (
+          <button
+            onClick={() => handlePagination(nextPage)}
+            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+          >
+            Next
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
