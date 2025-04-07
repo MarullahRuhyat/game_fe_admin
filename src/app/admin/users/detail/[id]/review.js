@@ -39,7 +39,6 @@ export default function Review({ user }) {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         params: params,
       });
@@ -84,7 +83,7 @@ export default function Review({ user }) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Terjadi kesalahan saat mengambil data produk.",
+        text: "Terjadi kesalahan saat mengambil data ulasan.",
       });
       setLoading(false);
     }

@@ -199,7 +199,7 @@ export default function UserLayout({ children }) {
                     <div
                       onClick={() => handleDropdown("request")}
                       className={`flex items-center px-4 py-3 hover:bg-white hover:text-purple-700 rounded-lg transition-colors cursor-pointer ${
-                        path.includes("/admin/master")
+                        path.includes("/admin/request")
                           ? "bg-white text-purple-700"
                           : ""
                       }`}
