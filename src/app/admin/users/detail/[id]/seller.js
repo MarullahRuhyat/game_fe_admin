@@ -61,7 +61,7 @@ export default function Seller({ user }) {
         <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-800">Saldo</h3>
           <p className="text-3xl font-bold text-gray-900 mt-4">
-            Rp {user.saldo}
+            Rp {parseFloat(user.saldo).toLocaleString("id-ID")}
           </p>
         </div>
 

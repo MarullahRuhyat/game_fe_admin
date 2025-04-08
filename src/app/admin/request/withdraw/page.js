@@ -156,7 +156,7 @@ export default function WithdrawPage() {
 
     const payload = {
       reason: reason,
-      status: action === "approve" ? "success" : "failed",
+      status: action === "approve" ? "approved" : "failed",
     };
 
     try {
