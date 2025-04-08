@@ -42,7 +42,7 @@ export default function DetailPage() {
     return <div>Loading...</div>;
   }
 
-  if (user?.is_seller) {
+  if (user?.role === "seller") {
     return <Seller user={user} seller={seller} />;
   }
   if (user != null) {

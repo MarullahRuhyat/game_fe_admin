@@ -50,7 +50,6 @@ export default function UserPage() {
         const url = data.previous;
         const parsedUrl = new URL(url);
         const page = parsedUrl.searchParams.get("page");
-        console.log("page", page);
         if (page === null) {
           setPageActive(2);
         } else {
@@ -194,11 +193,11 @@ export default function UserPage() {
                   <td className="border px-4 py-2 text-center">{user.name}</td>
                   <td className="border px-4 py-2 text-center">{user.email}</td>
                   <td className="border px-4 py-2 text-center">
-                    {user.is_admin
+                    {user.role === "admin"
                       ? "Admin"
-                      : user.is_seller
-                      ? "Seller"
-                      : "User"}
+                      : user.role === "seller"
+                      ? "Penjual"
+                      : "Pembeli"}
                   </td>
                   <td className="border px-4 py-2 text-center">
                     {user.is_active ? (

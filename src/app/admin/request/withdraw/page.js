@@ -116,6 +116,72 @@ export default function WithdrawPage() {
     fetchWithdraws(url);
   };
 
+  const handleAction = async (id, action) => {
+    const token = Cookies.get("token");
+    if (!token) {
+      Swal.fire("Gagal", "Anda tidak memiliki akses", "error");
+      return;
+    }
+
+    let reason = "";
+
+    if (action === "reject") {
+      const { value: text } = await Swal.fire({
+        title: "Alasan Penolakan",
+        input: "textarea",
+        inputLabel: "Tulis alasan mengapa penarikan ditolak",
+        inputPlaceholder: "Contoh: Data tidak valid, akun mencurigakan, dll.",
+        inputAttributes: {
+          "aria-label": "Alasan penolakan",
+        },
+        showCancelButton: true,
+      });
+
+      if (!text) return;
+      reason = text;
+    } else {
+      const confirm = await Swal.fire({
+        title: `Konfirmasi`,
+        text: `Yakin ingin menyetujui penarikan ini?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: `Ya, approve`,
+      });
+      console.log("confirm", confirm);
+
+      if (!confirm.isConfirmed) return;
+    }
+
+    const payload = {
+      reason: reason,
+      status: action === "approve" ? "success" : "failed",
+    };
+
+    try {
+      console.log("payload", payload);
+
+      const res = await fetch(`${api_url.withdraw}${id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal memproses aksi");
+      }
+
+      Swal.fire("Berhasil", `Penarikan berhasil di-${action}`, "success");
+      fetchWithdraws(); // Refresh data
+    } catch (err) {
+      Swal.fire("Gagal", "Terjadi kesalahan saat memproses", "error");
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Daftar Penarikan Saldo</h2>
@@ -149,6 +215,7 @@ export default function WithdrawPage() {
               <th className="px-4 py-2">Jumlah</th>
               <th className="px-4 py-2">Status</th>
               <th className="px-4 py-2">Tanggal</th>
+              <th className="px-4 py-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -187,6 +254,26 @@ export default function WithdrawPage() {
                   </td>
                   <td className="border px-4 py-2 text-center">
                     {new Date(withdraw.created_at).toLocaleDateString("id-ID")}
+                  </td>
+                  <td className="border px-4 py-2 text-center">
+                    {withdraw.status === "pending" ? (
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => handleAction(withdraw.id, "approve")}
+                          className="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleAction(withdraw.id, "reject")}
+                          className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      "-"
+                    )}
                   </td>
                 </tr>
               ))

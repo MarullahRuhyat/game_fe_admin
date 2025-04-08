@@ -39,12 +39,21 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+      console.log("Login response", data);
 
       if (!response.ok) {
         Swal.fire({
           icon: "error",
           title: "Login Gagal",
           text: data.message["indonesian"],
+        });
+        return;
+      }
+      if (data.user.role !== "admin") {
+        Swal.fire({
+          icon: "error",
+          title: "Login Gagal",
+          text: "Anda tidak memiliki akses ke halaman ini",
         });
         return;
       }
