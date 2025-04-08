@@ -238,7 +238,7 @@ export default function WithdrawPage() {
                     Rp {parseFloat(withdraw.amount).toLocaleString("id-ID")}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    {withdraw.status === "success" ? (
+                    {withdraw.status === "approved" ? (
                       <span className="bg-green-500 text-white px-2 py-1 rounded-md">
                         Berhasil
                       </span>
