@@ -2,6 +2,7 @@
 import React, { use, useEffect, useState } from "react";
 import api_url from "@/api_url";
 import Swal from "sweetalert2";
+import Image from "next/image";
 
 export default function Product({ user }) {
   const [products, setProducts] = useState([]);
@@ -101,7 +102,7 @@ export default function Product({ user }) {
               >
                 {/* Wrapper image pakai relative */}
                 <div className="relative h-48">
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover object-center"
@@ -131,7 +132,7 @@ export default function Product({ user }) {
 
                   <footer className="flex items-center justify-between border-t-2 p-4">
                     <div className="flex items-center">
-                      <img
+                      <Image
                         src={`${api_url.base_url}${product.user.image}`}
                         alt={product.user.name}
                         className="w-10 h-10 rounded-full object-cover mr-3"

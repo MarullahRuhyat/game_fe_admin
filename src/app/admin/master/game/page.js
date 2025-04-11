@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import { removeGame } from "@/redux/slice/gameSlice";
 import { ButtonAdd, ButtonEdit, ButtonDelete } from "@/component/button";
 import { Input } from "@/component/input";
+import Image from "next/image";
 
 export default function GamePage() {
   const [filteredGames, setFilteredGames] = useState([]);
@@ -265,7 +266,7 @@ export default function GamePage() {
                         </td>
                         <td className="px-6 py-5 xl:px-0 flex items-center justify-center">
                           {service.image ? (
-                            <img
+                            <Image
                               src={api_url.base_url + service.image}
                               alt={service.name}
                               className="w-16 h-16 object-cover rounded-lg"

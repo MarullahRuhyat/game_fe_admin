@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import api_url from "@/api_url";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 export default function Review({ user }) {
   const [reviews, setReviews] = useState([]);
@@ -112,7 +113,7 @@ export default function Review({ user }) {
             {reviews.map((review, index) => (
               <div key={index} className="border-b pb-4">
                 <div className="flex items-center">
-                  <img
+                  <Image
                     src={
                       review.user.image
                         ? `${api_url.base_url}${review.user.image}`

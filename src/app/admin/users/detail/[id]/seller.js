@@ -5,6 +5,7 @@ import Product from "./product";
 import Transaction from "./transaction";
 import Review from "./review";
 import api_url from "@/api_url";
+import Image from "next/image";
 
 export default function Seller({ user }) {
   const { id } = useParams();
@@ -111,7 +112,7 @@ export default function Seller({ user }) {
           Informasi Seller
         </h3>
         <div className="flex items-center mt-4">
-          <img
+          <Image
             src={
               user.image
                 ? `${api_url.base_url}${user.image}`

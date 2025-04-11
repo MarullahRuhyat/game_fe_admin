@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import api_url from "@/api_url";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 export default function SellerPage() {
   const router = useRouter();
@@ -239,7 +240,7 @@ export default function SellerPage() {
                     {sellerApplication.user.name}
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    <img
+                    <Image
                       src={`${sellerApplication.id_card}`}
                       alt="KTP"
                       className="w-16 h-16 object-cover rounded-md"
@@ -247,7 +248,7 @@ export default function SellerPage() {
                     />
                   </td>
                   <td className="border px-4 py-2 text-center">
-                    <img
+                    <Image
                       src={`${sellerApplication.selfie_with_id}`}
                       alt="KTP"
                       className="w-16 h-16 object-cover rounded-md"

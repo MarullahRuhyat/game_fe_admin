@@ -15,6 +15,7 @@ import api_url from "@/api_url";
 import { useDispatch, useSelector } from "react-redux";
 import MonthlyTransactionChart from "./monthlytransaction";
 import TotalUpChart from "@/component/totalUpChart";
+import Image from "next/image";
 
 // Registering necessary components for Chart.js
 ChartJS.register(
@@ -119,7 +120,7 @@ export default function UserPage() {
           key={idx}
           className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2 dark:bg-darkblack-500"
         >
-          <img
+          <Image
             src={game.image}
             alt={game.name}
             className="w-10 h-10 rounded-full object-cover"
@@ -140,7 +141,7 @@ export default function UserPage() {
           className="flex items-center justify-between bg-gray-50 rounded-lg p-2 dark:bg-darkblack-500 "
         >
           <div className="flex items-center space-x-3">
-            <img
+            <Image
               src={seller.image}
               alt={seller.name}
               className="w-10 h-10 rounded-full object-cover"
@@ -179,7 +180,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-pengguna.svg"
                           alt="icon"
                         />
@@ -204,7 +205,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-penjual.svg"
                           alt="icon"
                         />
@@ -229,7 +230,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-transaksi.svg"
                           alt="icon"
                         />
@@ -254,7 +255,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-earn.svg"
                           alt="icon"
                         />
@@ -279,7 +280,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-produk.svg"
                           alt="icon"
                         />
@@ -304,7 +305,7 @@ export default function UserPage() {
                   <div className="flex items-center space-x-[7px]">
                     <div className="icon">
                       <span>
-                        <img
+                        <Image
                           src="/template/assets/images/icons/total-game.svg"
                           alt="icon"
                         />
