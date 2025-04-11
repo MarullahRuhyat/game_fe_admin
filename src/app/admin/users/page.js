@@ -3,7 +3,7 @@
 import api_url from "@/api_url";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import "font-awesome/css/font-awesome.min.css";
+
 import Swal from "sweetalert2";
 
 export default function UserPage() {
@@ -86,6 +86,7 @@ export default function UserPage() {
     } catch (err) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Gagal memuat pengguna, server tidak merespon",
       });

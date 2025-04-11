@@ -1,0 +1,13 @@
+<svg width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g opacity="0.3">
+    <ellipse cx="22" cy="19" rx="16" ry="16" fill="#6A0DAD"/>
+    <ellipse cx="4" cy="4" rx="2.5" ry="2.5" fill="#6A0DAD"/>
+  </g>
+  <path d="M18 15C18 12.7909 19.7909 11 22 11C24.2091 11 26 12.7909 26 15C26 17.2091 24.2091 19 22 19C19.7909 19 18 17.2091 18 15Z" stroke="#6A0DAD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 30C30 26.6863 26.4183 24 22 24C17.5817 24 14 26.6863 14 30" stroke="#6A0DAD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Cart icon -->
+  <path d="M28 16H34L33 20H29" stroke="#6A0DAD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="30" cy="22.5" r="1" fill="#6A0DAD"/>
+  <circle cx="32.5" cy="22.5" r="1" fill="#6A0DAD"/>
+</svg>

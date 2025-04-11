@@ -70,6 +70,7 @@ export default function Product({ user }) {
       console.error("Error fetching products:", error);
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Terjadi kesalahan saat mengambil data produk.",
       });

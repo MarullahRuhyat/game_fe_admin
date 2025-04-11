@@ -19,6 +19,7 @@ export default function Review({ user }) {
     if (!token) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Anda harus login terlebih dahulu.",
       });
@@ -82,6 +83,7 @@ export default function Review({ user }) {
     } catch (error) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Terjadi kesalahan saat mengambil data ulasan.",
       });

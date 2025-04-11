@@ -23,6 +23,7 @@ export default function WithdrawPage() {
     if (!token) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Gagal",
         text: "Anda tidak memiliki akses, silahkan login",
       });
@@ -86,6 +87,7 @@ export default function WithdrawPage() {
     } catch (error) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Gagal",
         text: "Tidak bisa mengambil data withdraw",
       });

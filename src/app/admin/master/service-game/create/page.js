@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { addServiceGame } from "@/redux/slice/serviceGameSlice";
+import { ButtonSave, ButtonCancel } from "@/component/button";
+import { Input } from "@/component/input";
 
 export default function CreateServicePage() {
   const [serviceData, setServiceData] = useState({
@@ -65,24 +67,39 @@ export default function CreateServicePage() {
           text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
         }).then(() => {
           router.push("/admin/master/service-game");
         });
       } else {
         if (response.status === 403 || response.status === 401) {
-          Swal.fire(
-            "Error",
-            "Sesi telah berakhir. Silakan masuk kembali.",
-            "error"
-          );
+          Swal.fire({
+            title: "Error",
+            text: "Sesi telah berakhir. Silakan masuk kembali.",
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#4F46E5",
+          });
           Cookies.remove("token");
           router.push("/auth/login");
           return;
         }
-        Swal.fire("Error", "Service gagal ditambahkan.", "error");
+        Swal.fire({
+          title: "Gagal!",
+          text: data.message["ind"],
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
+        });
       }
     } catch (error) {
-      Swal.fire("Error", "Terjadi kesalahan.", "error");
+      Swal.fire({
+        title: "Error",
+        text: "Terjadi kesalahan saat menghubungi server.",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4F46E5",
+      });
     }
   };
 
@@ -90,64 +107,58 @@ export default function CreateServicePage() {
     router.push("/admin/master/service-game");
   };
 
-  console.log("serviceData", serviceData);
-
   return (
-    <div className="flex-1 flex flex-col">
-      <h1 className="text-2xl font-bold mb-4">Buat Service Baru</h1>
-      <form onSubmit={handleSubmit} className="bg-white">
-        <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nama Inggris
-          </label>
-          <input
-            type="text"
-            id="name_eng"
-            name="name_eng"
-            value={serviceData.name_eng}
-            onChange={handleInputChangeEng}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
-            required
-          />
-        </div>
+    <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
+      <div className="tab-content col-span-12 px-10 py-8">
+        <div className="">
+          <div className="">
+            <h3 className="border-b border-bgray-200 pb-5 text-2xl font-bold text-bgray-900 dark:border-darkblack-400 dark:text-white">
+              Tambah Service Game
+            </h3>
+            <div className="mt-8">
+              <form action="" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 gap-6 ">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Nama Inggris
+                    </label>
+                    <Input
+                      type={"text"}
+                      handle={handleInputChangeEng}
+                      value={serviceData.name_eng}
+                      placeholder={"name_eng"}
+                      name="name_eng"
+                      required={true}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Nama Indonesia
+                    </label>
+                    <Input
+                      type={"text"}
+                      handle={handleInputChangeInd}
+                      value={serviceData.name_ind}
+                      placeholder={"name_ind"}
+                      name="name_ind"
+                      required={true}
+                    />
+                  </div>
+                </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nama Indonesia
-          </label>
-          <input
-            type="text"
-            id="name_ind"
-            name="name_ind"
-            value={serviceData.name_ind}
-            onChange={handleInputChangeInd}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
-            required
-          />
+                <div className="flex justify-end space-x-2 mt-6">
+                  <ButtonSave title={"Simpan"} className="mt-6" />
+                  <ButtonCancel
+                    title={"Kembali"}
+                    handle={handleBack}
+                    className="mt-6"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-
-        <div className="mb-4 flex justify-start gap-2">
-          <button
-            type="submit"
-            className="ml-2 py-2 px-6 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-          >
-            Simpan
-          </button>
-          <button
-            type="button"
-            onClick={handleBack}
-            className="py-2 px-6 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            Kembali
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

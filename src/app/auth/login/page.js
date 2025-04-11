@@ -61,6 +61,7 @@ export default function LoginPage() {
       Cookies.set("token", data.access, { expires: 1, path: "/" });
       Swal.fire({
         icon: "success",
+        confirmButtonColor: "#6f42c1",
         title: "Login Berhasil",
         text: "Selamat datang di admin panel",
       }).then(() => {

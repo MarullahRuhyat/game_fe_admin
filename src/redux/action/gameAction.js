@@ -23,7 +23,13 @@ export const fetchGame = (router) => async (dispatch) => {
       dispatch(setGame(data));
     } else {
       if (response.status === 403 || response.status === 401) {
-        Swal.fire("Error", "Sesi telah habis. Silakan login kembali.", "error");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Sesi telah habis. Silakan login kembali.",
+          confirmButtonColor: "#dc3545",
+        });
+
         Cookies.remove("token");
         router.push("/auth/login");
         return;

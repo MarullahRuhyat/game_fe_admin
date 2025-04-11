@@ -23,6 +23,7 @@ export default function SellerPage() {
     if (!token) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Gagal",
         text: "Anda tidak memiliki akses, silahkan login",
       });
@@ -87,6 +88,7 @@ export default function SellerPage() {
     } catch (error) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Gagal",
         text: "Tidak bisa mengambil data sellerApplication",
       });

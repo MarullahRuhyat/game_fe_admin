@@ -1,0 +1,10 @@
+<svg width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g opacity="0.3">
+    <ellipse cx="22" cy="19" rx="16" ry="16" fill="#6A0DAD"/>
+    <ellipse cx="4" cy="4" rx="2.5" ry="2.5" fill="#6A0DAD"/>
+  </g>
+  <!-- Box icon -->
+  <path d="M14 16L22 12L30 16V26L22 30L14 26V16Z" stroke="#6A0DAD" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M22 12V22" stroke="#6A0DAD" stroke-width="2" stroke-linecap="round"/>
+  <path d="M14 16L22 22L30 16" stroke="#6A0DAD" stroke-width="2" stroke-linejoin="round"/>
+</svg>

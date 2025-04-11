@@ -8,7 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import { removeServiceGame } from "@/redux/slice/serviceGameSlice";
-import "font-awesome/css/font-awesome.min.css";
+import { ButtonAdd, ButtonEdit, ButtonDelete } from "@/component/button";
+import { Input } from "@/component/input";
 
 export default function ServicePage() {
   const [filteredServices, setFilteredServices] = useState([]);
@@ -28,6 +29,12 @@ export default function ServicePage() {
     if (!isFetchServiceGame) {
       dispatch(fetchServiceGame(router)).finally(() => setLoading(false));
     } else {
+      if (serviceGame.length > 0) {
+        const lastPage = Math.ceil(serviceGame.length / itemsPerPage);
+        if (currentPage > lastPage) {
+          setCurrentPage(lastPage);
+        }
+      }
       setLoading(false);
       setFilteredServices(serviceGame);
     }
@@ -37,7 +44,7 @@ export default function ServicePage() {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
     const filtered = serviceGame.filter((service) =>
-      service.name.toLowerCase().includes(query)
+      service.name_eng.toLowerCase().includes(query)
     );
     setFilteredServices(filtered);
     setCurrentPage(1);
@@ -80,17 +87,30 @@ export default function ServicePage() {
         text: data.message["ind"],
         icon: "success",
         confirmButtonText: "OK",
+        confirmButtonColor: "#4F46E5",
       }).then(() => {
         dispatch(removeServiceGame(id));
       });
     } else {
       if (response.status === 403 || response.status === 401) {
-        Swal.fire("Error", "Sesi telah habis. Silakan login kembali.", "error");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Sesi telah habis. Silakan login kembali.",
+          confirmButtonColor: "#dc3545",
+        });
+
         Cookies.remove("token");
         router.push("/auth/login");
         return;
       }
-      Swal.fire("Error", "Gagal menghapus service.", "error");
+      Swal.fire({
+        title: "Gagal!",
+        text: "Gagal menghapus data service",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4F46E5",
+      });
     }
   };
 
@@ -117,123 +137,153 @@ export default function ServicePage() {
     return range;
   };
 
-  return (
-    <>
-      <h2 className="text-2xl font-bold mb-4">Daftar Service Game</h2>
-      <div className="mb-2 flex flex-col md:flex-row justify-between">
-        <button
-          onClick={() => router.push("/admin/master/service-game/create")}
-          className="mb-2 md:mb-0 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-        >
-          <i className="fa fa-plus mr-2"></i>
-          Tambah Service
-        </button>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearch}
-          placeholder="Cari berdasarkan nama"
-          className="px-4 py-2 rounded-md shadow border border-gray-300 focus:outline-none focus:ring focus:border-blue-500"
-        />
-      </div>
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Nama Inggris</th>
-              <th className="px-4 py-2">Nama Indonesia</th>
-              <th className="px-4 py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="3"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Memuat service...
-                </td>
-              </tr>
-            ) : currentServices.length > 0 ? (
-              currentServices.map((service, index) => (
-                <tr key={service.id}>
-                  <td className="border px-4 py-2 text-center">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {service.name_eng}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {service.name_ind}
-                  </td>
+  const handleAddServie = () => {
+    router.push("/admin/master/service-game/create");
+  };
+  const handleEditService = (id) => {
+    router.push(`/admin/master/service-game/${id}`);
+  };
+  const listHeaderTable = ["No", "Nama Inggris", "Nama Indonesia", "Aksi"];
 
-                  <td className="border px-4 py-2 text-center">
+  return (
+    <div className="2xl:flex 2xl:space-x-[48px]">
+      <section className="mb-6 2xl:mb-0 2xl:flex-1">
+        <div className="w-full rounded-lg bg-white px-[24px] py-[20px] dark:bg-darkblack-600">
+          <div className="flex flex-col space-y-10 md:space-y-5">
+            <div className="filter-content w-full">
+              <div className="w-full">
+                <div className="relative space-y-5 md:space-y-0 h-[56px] w-full flex flex-col md:flex-row  md:items-center md:justify-between">
+                  {/* button tambah */}
+                  <ButtonAdd title="Tambah Service" handle={handleAddServie} />
+                  <Input
+                    type="text"
+                    placeholder="Cari berdasarkan nama"
+                    value={searchQuery}
+                    handle={handleSearch}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="table-content w-full overflow-x-auto ">
+              <table className="w-full ">
+                <thead className="bg-bgray-50 dark:bg-darkblack-500">
+                  <tr className="border-b border-bgray-300 dark:border-darkblack-400">
+                    {listHeaderTable.map((header, index) => (
+                      <td className="px-6 py-5 xl:px-0 text-center" key={index}>
+                        <div className="flex justify-center w-full items-center space-x-2.5">
+                          <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                            {header}
+                          </span>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Memuat service...
+                      </td>
+                    </tr>
+                  ) : currentServices.length > 0 ? (
+                    currentServices.map((service, index) => (
+                      <tr
+                        key={service.id}
+                        className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
+                      >
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {indexOfFirstItem + index + 1}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {service.name_eng}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {service.name_ind}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <div className="flex justify-center items-center space-x-2">
+                            <ButtonEdit
+                              id={service.id}
+                              handle={handleEditService}
+                            />
+                            <ButtonDelete
+                              id={service.id}
+                              handle={handleDelete}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Service tidak ditemukan
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="pagination-content w-full">
+              <div className="flex w-full items-center justify-end">
+                <div className="flex items-center ">
+                  {currentPage > 1 && (
                     <button
-                      onClick={() =>
-                        router.push(`/admin/master/service-game/${service.id}`)
-                      }
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
+                      style={{ margin: "3px" }}
+                      type="button"
+                      onClick={() => paginate(currentPage - 1)}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
-                      <i className="fa fa-edit mr-2"></i>
-                      Edit
+                      <span>Sebelumnya</span>
                     </button>
+                  )}
+                  <div className="flex items-center">
+                    {getPageRange().map((page) => (
+                      <button
+                        style={{
+                          margin: "1px",
+                        }}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out ${
+                          currentPage === page
+                            ? "bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
+                            : "text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  {currentPage < totalPages && (
                     <button
-                      onClick={() => handleDelete(service.id)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 ml-2"
+                      style={{ margin: "3px" }}
+                      onClick={() => paginate(currentPage + 1)}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
-                      <i className="fa fa-trash mr-2"></i>
-                      Hapus
+                      Selanjutnya
                     </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="3"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Service tidak ditemukan
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      {/* Pagination */}
-      <div className="flex justify-end mt-4">
-        {currentPage > 1 && (
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Previous
-          </button>
-        )}
-        {getPageRange().map((page) => (
-          <button
-            key={page}
-            onClick={() => paginate(page)}
-            className={`px-4 py-2 mx-1 rounded-md shadow ${
-              currentPage === page
-                ? "bg-blue-600 text-white"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-        {currentPage < totalPages && (
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Next
-          </button>
-        )}
-      </div>
-    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

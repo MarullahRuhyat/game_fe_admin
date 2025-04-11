@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, useRef } from "react";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,6 +14,7 @@ import {
 import api_url from "@/api_url";
 import { useDispatch, useSelector } from "react-redux";
 import MonthlyTransactionChart from "./monthlytransaction";
+import TotalUpChart from "@/component/totalUpChart";
 
 // Registering necessary components for Chart.js
 ChartJS.register(
@@ -116,14 +117,16 @@ export default function UserPage() {
       {games.map((game, idx) => (
         <li
           key={idx}
-          className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2"
+          className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2 dark:bg-darkblack-500"
         >
           <img
             src={game.image}
             alt={game.name}
             className="w-10 h-10 rounded-full object-cover"
           />
-          <span className="text-gray-800 font-medium">{game.name}</span>
+          <span className="text-gray-800 font-medium dark:text-white">
+            {game.name}
+          </span>
         </li>
       ))}
     </ul>
@@ -134,7 +137,7 @@ export default function UserPage() {
       {sellers.map((seller, idx) => (
         <li
           key={idx}
-          className="flex items-center justify-between bg-gray-50 rounded-lg p-2"
+          className="flex items-center justify-between bg-gray-50 rounded-lg p-2 dark:bg-darkblack-500 "
         >
           <div className="flex items-center space-x-3">
             <img
@@ -142,9 +145,11 @@ export default function UserPage() {
               alt={seller.name}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <span className="text-gray-800 font-medium">{seller.name}</span>
+            <span className="text-gray-800 font-medium dark:text-white">
+              {seller.name}
+            </span>
           </div>
-          <span className="text-green-600 font-semibold">{seller.total}</span>
+          <span className="text-purple-700 font-semibold">{seller.total}</span>
         </li>
       ))}
     </ul>
@@ -155,111 +160,226 @@ export default function UserPage() {
     { key: "bulan", label: "Bulan Ini" },
     { key: "semua", label: "Sepanjang Waktu" },
   ];
+
+  const tabClass = (isActive) =>
+    `px-4 py-2 rounded-t-md font-semibold transition-all duration-200 ${
+      isActive
+        ? "bg-white text-bgray-900 shadow-md dark:bg-darkblack-500 dark:text-white"
+        : "bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-darkblack-400 dark:text-gray-400 hover:dark:bg-darkblack-300"
+    }`;
+
   return (
-    <div className=" p-2">
-      {/* info dashboard */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard Admin</h1>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {/* Total pengguna */}
-        <div className="bg-white border  shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Total Pengguna
-          </h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">100</p>
-        </div>
-
-        {/* Total penjual */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Total Penjual</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">50</p>
-        </div>
-
-        {/* Total Transaksi */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Total Transaksi
-          </h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">1000</p>
-        </div>
-
-        {/* Total saldo users */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Total Saldo Penjual
-          </h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">
-            Rp 1000.000.000
-          </p>
-        </div>
-
-        {/* total game */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Total Game</h3>
-          <div className="flex mt-4 ">
-            <p className="text-3xl font-bold  ">50</p>
+    <>
+      <div className="2xl:flex 2xl:space-x-[48px]">
+        <section className="mb-6 2xl:mb-0 2xl:flex-1">
+          <div className="mb-[24px] w-full">
+            <div className="grid grid-cols-1 gap-[24px] lg:grid-cols-3">
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-pengguna.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Pengguna
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-penjual.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Penjual
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-transaksi.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Transaksi
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-earn.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Saldo
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-produk.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Produk
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <img
+                          src="/template/assets/images/icons/total-game.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Game
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      $7,245.00
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* level silver */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Total Produk</h3>
-          <div className="flex mt-4 ">
-            <p className="text-3xl font-bold  ">50</p>
-          </div>
-        </div>
+        </section>
       </div>
-
       <MonthlyTransactionChart />
-
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Game Terlaris */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
-            10 Game Terlaris
-          </h2>
-          <div className="flex justify-center space-x-2 mb-4">
-            {tabOptions.map((tab) => (
-              <button
-                key={tab.key}
-                className={`px-4 py-2 text-sm rounded-full transition-all ${
-                  activeGameTab === tab.key
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-                onClick={() => setActiveGameTab(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
+        <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-bgray-900 dark:text-white">
+              10 Game Terlaris
+            </h2>
+            <div className="flex space-x-2">
+              {tabOptions.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveGameTab(tab.key)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    activeGameTab === tab.key
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
           {renderGameList(topGames[activeGameTab])}
         </div>
 
-        {/* Seller Terlaris */}
-        <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
-            10 Penjual Terlaris
-          </h2>
-          <div className="flex justify-center space-x-2 mb-4">
-            {tabOptions.map((tab) => (
-              <button
-                key={tab.key}
-                className={`px-4 py-2 text-sm rounded-full transition-all ${
-                  activeSellerTab === tab.key
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-                onClick={() => setActiveSellerTab(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
+        {/* Penjual Terlaris */}
+        <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-bgray-900 dark:text-white">
+              10 Penjual Terlaris
+            </h2>
+            <div className="flex space-x-2">
+              {tabOptions.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveSellerTab(tab.key)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    activeSellerTab === tab.key
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
           {renderSellerList(topSellers[activeSellerTab])}
         </div>
       </div>
-    </div>
+    </>
   );
 }

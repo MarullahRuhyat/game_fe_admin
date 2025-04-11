@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { addGenreGame } from "@/redux/slice/genreGameSlice";
+import { ButtonSave, ButtonCancel } from "@/component/button";
+import { Input } from "@/component/input";
 
 export default function CreateGenrePage() {
   const [genreData, setGenreData] = useState({
@@ -54,6 +56,7 @@ export default function CreateGenrePage() {
           text: data.message["ind"],
           icon: "success",
           confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
         }).then(() => {
           router.push("/admin/master/genre-game");
         });
@@ -68,10 +71,22 @@ export default function CreateGenrePage() {
           router.push("/auth/login");
           return;
         }
-        Swal.fire("Error", "Genre gagal ditambahkan.", "error");
+        Swal.fire({
+          title: "Gagal!",
+          text: data.message["ind"],
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
+        });
       }
     } catch (error) {
-      Swal.fire("Error", "Terjadi kesalahan.", "error");
+      Swal.fire({
+        title: "Gagal!",
+        text: "Terjadi kesalahan saat menghubungi server.",
+        icon: "error",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4F46E5",
+      });
     }
   };
 
@@ -80,59 +95,57 @@ export default function CreateGenrePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <h1 className="text-2xl font-bold mb-4">Buat Genre Baru</h1>
-      <form onSubmit={handleSubmit} className="bg-white">
-        <div className="mb-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nama Genre
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={genreData.name}
-            onChange={handleInputChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
-            required
-          />
-        </div>
+    <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
+      <div className="tab-content col-span-12 px-10 py-8">
+        <div className="">
+          <div className="">
+            <h3 className="border-b border-bgray-200 pb-5 text-2xl font-bold text-bgray-900 dark:border-darkblack-400 dark:text-white">
+              Tambah Genre Game
+            </h3>
+            <div className="mt-8">
+              <form action="" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 gap-6 ">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Nama Genre
+                    </label>
+                    <Input
+                      type={"text"}
+                      handle={handleInputChange}
+                      value={genreData.name}
+                      placeholder={"name"}
+                      name="name"
+                      required={true}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Deskripsi
+                    </label>
+                    <Input
+                      type={"text"}
+                      handle={handleInputChange}
+                      value={genreData.description}
+                      placeholder={"description"}
+                      name="description"
+                      required={true}
+                    />
+                  </div>
+                </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Deskripsi
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={genreData.description}
-            onChange={handleInputChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md"
-          ></textarea>
+                <div className="flex justify-end space-x-2 mt-6">
+                  <ButtonSave title={"Simpan"} className="mt-6" />
+                  <ButtonCancel
+                    title={"Kembali"}
+                    handle={handleBack}
+                    className="mt-6"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-
-        <div className="mb-4 flex justify-start gap-2">
-          <button
-            type="submit"
-            className="ml-2 py-2 px-6 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-          >
-            Simpan
-          </button>
-          <button
-            type="button"
-            onClick={handleBack}
-            className="py-2 px-6 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            Kembali
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

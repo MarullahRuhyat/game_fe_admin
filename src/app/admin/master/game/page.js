@@ -9,7 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import { removeGame } from "@/redux/slice/gameSlice";
-import "font-awesome/css/font-awesome.min.css";
+import { ButtonAdd, ButtonEdit, ButtonDelete } from "@/component/button";
+import { Input } from "@/component/input";
 
 export default function GamePage() {
   const [filteredGames, setFilteredGames] = useState([]);
@@ -46,6 +47,12 @@ export default function GamePage() {
 
   useEffect(() => {
     let filtered = games;
+    if (games.length > 0) {
+      const lastPage = Math.ceil(games.length / itemsPerPage);
+      if (currentPage > lastPage) {
+        setCurrentPage(lastPage);
+      }
+    }
 
     if (searchQuery) {
       filtered = filtered.filter((game) =>
@@ -139,184 +146,205 @@ export default function GamePage() {
   };
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handleAddGame = () => {
+    router.push("/admin/master/game/create");
+  };
+  const handleEditGame = (id) => {
+    router.push(`/admin/master/game/${id}`);
+  };
+
+  const listHeaderTable = [
+    "No",
+    "Nama Game",
+    "Genre",
+    "Sensitif Game",
+    "Populer Game",
+    "Image",
+    "Aksi",
+  ];
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Daftar Game</h2>
+    <div className="2xl:flex 2xl:space-x-[48px]">
+      <section className="mb-6 2xl:mb-0 2xl:flex-1">
+        <div className="w-full rounded-lg bg-white px-[24px] py-[20px] dark:bg-darkblack-600">
+          <div className="flex flex-col space-y-10 md:space-y-0">
+            <div className="filter-content w-full">
+              <div className="w-full">
+                <div className="relative space-y-5 md:space-y-0 h-[56px] w-full flex flex-col md:flex-row  md:items-center md:justify-between">
+                  {/* button tambah */}
+                  <ButtonAdd handle={handleAddGame} title="Tambah Game" />
+                  <Input
+                    type="text"
+                    placeholder="Cari berdasarkan nama"
+                    value={searchQuery}
+                    handle={handleSearch}
+                    name="search"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="table-content w-full overflow-x-auto ">
+              <div className="flex space-x-4 text-lg mb-4">
+                {tabs.map((tab) => (
+                  <div
+                    key={tab.id}
+                    className={`pb-2 cursor-pointer transition-all border-b-2 text-bgray-900 dark:text-bgray-50 ${
+                      activeTab === tab.id
+                        ? " border-purple-300 font-semibold"
+                        : "border-transparent "
+                    }`}
+                    onClick={() => handleActiveTab(tab.id)}
+                  >
+                    {tab.title}
+                  </div>
+                ))}
+              </div>
+              <table className="w-full ">
+                <thead className="bg-bgray-50 dark:bg-darkblack-500">
+                  <tr className="border-b border-bgray-300 dark:border-darkblack-400">
+                    {listHeaderTable.map((header, index) => (
+                      <td className="px-6 py-5 xl:px-0 text-center" key={index}>
+                        <div className="flex justify-center w-full items-center space-x-2.5">
+                          <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                            {header}
+                          </span>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </thead>
 
-      <div className="mb-2 flex flex-col md:flex-row justify-between gap-2">
-        <button
-          onClick={() => router.push("/admin/master/game/create")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-        >
-          <i className="fa fa-plus mr-2"></i> Tambah Game
-        </button>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Cari berdasarkan nama"
-            className="px-4 py-2 rounded-md shadow border border-gray-300 focus:outline-none focus:ring focus:border-blue-500"
-          />
-
-          <select
-            value={selectedGenre}
-            onChange={handleFilterGenre}
-            className="px-4 py-2 rounded-md shadow border bg-white border-gray-300 focus:outline-none focus:ring focus:border-blue-500"
-          >
-            <option value="">Semua Genre</option>
-            {genreGame.map((genre) => (
-              <option key={genre.id} value={genre.id}>
-                {genre.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="flex  mt-4 space-x-4 text-lg">
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`pb-2 cursor-pointer transition-all border-b-2 ${
-              activeTab === tab.id
-                ? "text-black border-black font-semibold"
-                : "text-gray-500 border-transparent hover:text-black"
-            }`}
-            onClick={() => handleActiveTab(tab.id)}
-          >
-            {tab.title}
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Memuat service...
+                      </td>
+                    </tr>
+                  ) : currentGames.length > 0 ? (
+                    currentGames.map((service, index) => (
+                      <tr
+                        key={service.id}
+                        className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
+                      >
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {indexOfFirstItem + index + 1}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {service.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {service.genre.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          {service.sensitif_game ? (
+                            <span className="text-white text-[15px] font-semibold bg-red-700 p-1 rounded-lg">
+                              Sensitif
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          {service.popular ? (
+                            <span className="text-white text-[15px] font-semibold bg-green-700 p-1 rounded-lg">
+                              Populer
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-6 py-5 xl:px-0 flex items-center justify-center">
+                          {service.image ? (
+                            <img
+                              src={api_url.base_url + service.image}
+                              alt={service.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <div className="flex justify-center items-center space-x-2">
+                            <ButtonEdit
+                              handle={() => handleEditGame(service.id)}
+                            />
+                            <ButtonDelete
+                              handle={() => handleDelete(service.id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Service tidak ditemukan
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="pagination-content w-full">
+              <div className="flex w-full items-center justify-end">
+                <div className="flex items-center ">
+                  {currentPage > 1 && (
+                    <button
+                      style={{ margin: "3px" }}
+                      type="button"
+                      onClick={() => paginate(currentPage - 1)}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                    >
+                      <span>Sebelumnya</span>
+                    </button>
+                  )}
+                  <div className="flex items-center">
+                    {getPageRange().map((page) => (
+                      <button
+                        style={{
+                          margin: "1px",
+                        }}
+                        key={page}
+                        onClick={() => paginate(page)}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out ${
+                          currentPage === page
+                            ? "bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
+                            : "text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  {currentPage < totalPages && (
+                    <button
+                      style={{ margin: "3px" }}
+                      onClick={() => paginate(currentPage + 1)}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                    >
+                      Selanjutnya
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
-
-      <div className="overflow-x-auto mt-2">
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Nama Game</th>
-              <th className="px-4 py-2">Genre</th>
-              <th className="px-4 py-2">Sensitif Game</th>
-              <th className="px-4 py-2">Populer Game</th>
-              <th className="px-4 py-2">Image</th>
-              <th className="px-4 py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Memuat game...
-                </td>
-              </tr>
-            ) : currentGames.length > 0 ? (
-              currentGames.map((game, index) => (
-                <tr key={game.id}>
-                  <td className="border px-4 py-2 text-center">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="border px-4 py-2 text-center">{game.name}</td>
-                  <td className="border px-4 py-2 text-center">
-                    {game.genre.name}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {game.sensitif_game ? (
-                      <span className="text-white text-[15px] font-semibold bg-red-700 p-1 rounded-lg">
-                        Sensitif
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {game.popular ? (
-                      <span className="text-white text-[15px] font-semibold bg-green-700 p-1 rounded-lg">
-                        Populer
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {game.image ? (
-                      <img
-                        src={api_url.base_url + game.image}
-                        alt={game.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    <button
-                      onClick={() =>
-                        router.push(`/admin/master/game/${game.id}`)
-                      }
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
-                    >
-                      <i className="fa fa-edit mr-2"></i> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(game.id)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700 ml-2"
-                    >
-                      <i className="fa fa-trash mr-2"></i> Hapus
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center text-gray-500 font-semibold py-4"
-                >
-                  Game tidak ditemukan
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex justify-end mt-4">
-        {currentPage > 1 && (
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Previous
-          </button>
-        )}
-        {getPageRange().map((page) => (
-          <button
-            key={page}
-            onClick={() => paginate(page)}
-            className={`px-4 py-2 mx-1 rounded-md shadow ${
-              currentPage === page
-                ? "bg-blue-600 text-white"
-                : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-        {currentPage < totalPages && (
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Next
-          </button>
-        )}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

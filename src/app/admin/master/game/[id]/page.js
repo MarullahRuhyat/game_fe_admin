@@ -8,6 +8,8 @@ import api_url from "@/api_url";
 import { fetchGenreGame } from "@/redux/action/genreGameAction";
 import { fetchServiceGame } from "@/redux/action/serviceGameAction";
 import { updateGame } from "@/redux/slice/gameSlice";
+import { ButtonSave, ButtonCancel } from "@/component/button";
+import { Input, InputSelect } from "@/component/input";
 
 export default function EditGamePage() {
   const { id } = useParams();
@@ -103,6 +105,7 @@ export default function EditGamePage() {
     formDataFile.append("sensitif_game", formData.sensitif_game);
     formDataFile.append("popular", formData.popular);
     if (formData.image) formDataFile.append("image", formData.image);
+    console.log("formDataFile", formDataFile);
 
     try {
       const res = await fetch(`${api_url.game}${id}/`, {
@@ -115,8 +118,16 @@ export default function EditGamePage() {
 
       if (res.ok) {
         dispatch(updateGame(data.data));
-        Swal.fire("Berhasil!", data.message["ind"], "success").then(() => {
-          router.push("/admin/master/game");
+        Swal.fire({
+          title: "Berhasil",
+          text: "Game berhasil diubah.",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push("/admin/master/game");
+          }
         });
       } else {
         Swal.fire("Gagal", "Gagal mengupdate game.", "error");
@@ -126,130 +137,163 @@ export default function EditGamePage() {
     }
   };
 
+  const handleInputFile = (e) => {
+    const file = e.target.files[0];
+    console.log("file", file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSensitifChange = (e) => {
+    const { checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      sensitif_game: checked ? "1" : "0",
+    }));
+  };
+  const handlePopularChange = (e) => {
+    const { checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      popular: checked ? "1" : "0",
+    }));
+  };
+  const handleBack = () => {
+    router.push("/admin/master/game");
+  };
+
   return (
-    <div className="flex-1">
-      <h1 className="text-2xl font-bold mb-4">Edit Game</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-4 rounded shadow space-y-4"
-      >
-        <div>
-          <label className="block mb-1 font-medium">Nama Game</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded"
-          />
-        </div>
+    <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
+      <div className="tab-content col-span-12 px-10 py-8">
+        <div className="">
+          <div className="">
+            <h3 className="border-b border-bgray-200 pb-5 text-2xl font-bold text-bgray-900 dark:border-darkblack-400 dark:text-white">
+              Ubah Game
+            </h3>
+            <div className="mt-8">
+              <form action="" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 gap-6 ">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Nama Game
+                    </label>
+                    <Input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      handle={handleChange}
+                      required
+                      placeholder="Masukkan nama game"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Genre
+                    </label>
+                    <InputSelect
+                      name="genre"
+                      value={formData.genre}
+                      handle={handleChange}
+                      required
+                      placeholder="Pilih genre"
+                      options={genreGame.map((genre) => ({
+                        value: genre.id,
+                        label: genre.name,
+                      }))}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Image
+                    </label>
+                    <Input
+                      type="file"
+                      name="image"
+                      handle={handleInputFile}
+                      accept="image/*"
+                      placeholder="Pilih gambar"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Service Game
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      {serviceGame.map((service) => (
+                        <label
+                          key={service.id}
+                          className="inline-flex items-center text-black dark:text-white"
+                        >
+                          <input
+                            type="checkbox"
+                            value={service.id}
+                            checked={formData.game_services.includes(service)}
+                            onChange={handleCheckboxChange}
+                            className="mr-2"
+                          />
+                          {service.name_eng}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Sensitif Game
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center text-black dark:text-white">
+                        <input
+                          type="checkbox"
+                          value="1"
+                          checked={formData.sensitif_game === "1"}
+                          onChange={handleSensitifChange}
+                          className="mr-2"
+                        />
+                        Sensitif
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Populer Game
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center text-black dark:text-white">
+                        <input
+                          type="checkbox"
+                          value="1"
+                          checked={formData.popular === "1"}
+                          onChange={handlePopularChange}
+                          className="mr-2"
+                        />
+                        Populer
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Genre</label>
-          <select
-            name="genre"
-            value={formData.genre}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded bg-white"
-          >
-            <option value="">Pilih Genre</option>
-            {genreGame.map((genre) => (
-              <option key={genre.id} value={genre.id}>
-                {genre.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Image</label>
-          <input
-            type="file"
-            name="image"
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, image: e.target.files[0] }))
-            }
-            className="w-full p-3 border border-gray-300 rounded"
-          />
-          {formData.image && (
-            <p className="text-gray-500 text-sm mt-1">
-              Gambar akan diperbarui.
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Service Game </label>
-          <div className="flex flex-wrap gap-3">
-            {serviceGame.map((service) => (
-              <label key={service.id} className="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  value={service.id}
-                  checked={formData.game_services.some(
-                    (s) => s.id === service.id
-                  )}
-                  onChange={handleCheckboxChange}
-                  className="mr-2"
-                />
-                {service.name_eng}
-              </label>
-            ))}
+                <div className="flex justify-end space-x-2 mt-6">
+                  <ButtonSave title={"Simpan"} className="mt-6" />
+                  <ButtonCancel
+                    title={"Kembali"}
+                    handle={handleBack}
+                    className="mt-6"
+                  />
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Sensitif Game</label>
-          <input
-            type="checkbox"
-            value="1"
-            checked={formData.sensitif_game === 1}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                sensitif_game: e.target.checked ? 1 : 0,
-              }))
-            }
-            className="mr-2"
-          />
-          Sensitif
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium"> Populer Game</label>
-          <input
-            type="checkbox"
-            value="1"
-            checked={formData.popular === 1}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                popular: e.target.checked ? 1 : 0,
-              }))
-            }
-            className="mr-2"
-          />
-          Populer
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="py-2 px-6 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Simpan
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/admin/master/game")}
-            className="py-2 px-6 bg-gray-600 text-white rounded hover:bg-gray-700"
-          >
-            Kembali
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

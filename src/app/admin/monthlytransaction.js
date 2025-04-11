@@ -67,8 +67,10 @@ const MonthlyTransactionChart = () => {
   };
 
   return (
-    <div className="bg-white shadow-lg p-4 rounded-xl border">
-      <Bar data={data} options={options} />
+    <div className="bg-white p-5 dark:bg-darkblack-600">
+      <div className="bg-mb-2 flex items-center justify-between border-b border-bgray-300 pb-2 dark:border-darkblack-400">
+        <Bar data={data} options={options} />
+      </div>
     </div>
   );
 };

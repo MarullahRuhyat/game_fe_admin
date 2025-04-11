@@ -19,6 +19,7 @@ export default function Transaction({ user }) {
     if (!token) {
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Anda harus login terlebih dahulu.",
       });
@@ -85,6 +86,7 @@ export default function Transaction({ user }) {
       console.error("Error fetching transaction:", error);
       Swal.fire({
         icon: "error",
+        confirmButtonColor: "#dc3545",
         title: "Error",
         text: "Terjadi kesalahan saat mengambil data transaksi.",
       });
