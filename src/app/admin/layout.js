@@ -156,7 +156,7 @@ export default function UserLayout({ children }) {
             <div className="relative flex w-full">
               <aside className="sidebar-wrapper fixed top-0 z-30 block h-full w-[308px] bg-white dark:bg-darkblack-600 sm:hidden xl:block">
                 <div className="sidebar-header relative z-30 flex h-[108px] w-full items-center border-b border-r border-b-[#F7F7F7] border-r-[#F7F7F7] pl-[50px] dark:border-darkblack-400">
-                  <a href="index.html">
+                  <Link href="index.html">
                     <Image
                       src="/template/assets/images/logo/logo-color.svg"
                       className="block dark:hidden"
@@ -167,7 +167,7 @@ export default function UserLayout({ children }) {
                       className="hidden dark:block"
                       alt="logo"
                     />
-                  </a>
+                  </Link>
                   <button
                     type="button"
                     className="drawer-btn absolute right-0 top-auto"
@@ -242,7 +242,7 @@ export default function UserLayout({ children }) {
               <aside className="relative hidden w-[96px] bg-white dark:bg-black sm:block">
                 <div className="sidebar-wrapper-collapse relative top-0 z-30 w-full">
                   <div className="sidebar-header sticky top-0 z-20 flex h-[108px] w-full items-center justify-center border-b border-r border-b-[#F7F7F7] border-r-[#F7F7F7] bg-white dark:border-darkblack-500 dark:bg-darkblack-600">
-                    <a href="index.html">
+                    <Link href="index.html">
                       <Image
                         src="/template/assets/images/logo/logo-short.svg"
                         className="block dark:hidden"
@@ -253,7 +253,7 @@ export default function UserLayout({ children }) {
                         className="hidden dark:block"
                         alt="logo"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <div className="sidebar-body w-full pt-[14px]">
                     <div className="flex flex-col items-center">
@@ -480,7 +480,7 @@ export default function UserLayout({ children }) {
                             <div>
                               <ul>
                                 <li className="w-full">
-                                  <a href="settings.html">
+                                  <Link href="settings.html">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900 hover:dark:bg-darkblack-500">
                                       <div className="w-[20px]">
                                         <span>
@@ -519,10 +519,10 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li className="w-full">
-                                  <a href="messages.html">
+                                  <Link href="messages.html">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900 dark:text-bgray-300 dark:hover:bg-darkblack-500">
                                       <div className="w-[20px]">
                                         <span>
@@ -548,14 +548,14 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li
                                   className="w-full"
                                   // logout
                                   onClick={handleLogout}
                                 >
-                                  <a href="#">
+                                  <Link href="#">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-purple-300">
                                       <div className="w-[20px]">
                                         <span>
@@ -581,7 +581,7 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                               </ul>
                             </div>
@@ -589,22 +589,22 @@ export default function UserLayout({ children }) {
                             <div>
                               <ul>
                                 <li className="w-full">
-                                  <a href="settings.html">
+                                  <Link href="settings.html">
                                     <div className="rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900 dark:text-bgray-50 dark:hover:bg-darkblack-500">
                                       <span className="text-sm font-semibold">
                                         Settings
                                       </span>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li className="w-full">
-                                  <a href="users.html">
+                                  <Link href="users.html">
                                     <div className="rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900 dark:text-bgray-50 dark:hover:bg-darkblack-500">
                                       <span className="text-sm font-semibold">
                                         Users
                                       </span>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                               </ul>
                             </div>
@@ -649,7 +649,7 @@ export default function UserLayout({ children }) {
                         </span>
                       </button>
                       <div>
-                        <a href="/">
+                        <Link href="/">
                           <Image
                             src="/template/assets/images/logo/logo-color.svg"
                             className="block dark:hidden"
@@ -660,7 +660,7 @@ export default function UserLayout({ children }) {
                             className="hidden dark:block"
                             alt="logo"
                           />
-                        </a>
+                        </Link>
                       </div>
                     </div>
                     <div className="mr-2">
@@ -715,7 +715,7 @@ export default function UserLayout({ children }) {
                             <div>
                               <ul>
                                 <li className="w-full">
-                                  <a href="settings.html">
+                                  <Link href="settings.html">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900">
                                       <div className="w-[20px]">
                                         <span>
@@ -756,10 +756,10 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li className="w-full">
-                                  <a href="messages.html">
+                                  <Link href="messages.html">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900">
                                       <div className="w-[20px]">
                                         <span>
@@ -785,10 +785,10 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li className="w-full">
-                                  <a href="#">
+                                  <Link href="#">
                                     <div className="flex items-center space-x-[18px] rounded-lg p-[14px] text-purple-300">
                                       <div className="w-[20px]">
                                         <span>
@@ -814,7 +814,7 @@ export default function UserLayout({ children }) {
                                         </span>
                                       </div>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                               </ul>
                             </div>
@@ -822,22 +822,22 @@ export default function UserLayout({ children }) {
                             <div>
                               <ul>
                                 <li className="w-full">
-                                  <a href="settings.html">
+                                  <Link href="settings.html">
                                     <div className="rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900">
                                       <span className="text-sm font-semibold">
                                         Settings
                                       </span>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                                 <li className="w-full">
-                                  <a href="users.html">
+                                  <Link href="users.html">
                                     <div className="rounded-lg p-[14px] text-bgray-600 hover:bg-bgray-100 hover:text-bgray-900">
                                       <span className="text-sm font-semibold">
                                         Users
                                       </span>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                               </ul>
                             </div>
