@@ -57,7 +57,6 @@ export default function Transaction({ user }) {
         const url = data.previous;
         const parsedUrl = new URL(url);
         const page = parsedUrl.searchParams.get("page");
-        console.log("page", page);
         if (page === null) {
           setPageActive(2);
         } else {

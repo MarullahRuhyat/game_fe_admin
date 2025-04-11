@@ -32,7 +32,12 @@ export default function DetailPage() {
           });
         }
       } catch (error) {
-        Swal.fire("Error", "Terjadi kesalahan.", "error");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Terjadi kesalahan pada server.",
+          confirmButtonColor: "#dc3545",
+        });
       }
       setLoading(false);
     };
