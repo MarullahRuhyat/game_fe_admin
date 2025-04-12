@@ -4,6 +4,8 @@ import {
   faTrash,
   faInfo,
   faArrowLeft,
+  faCheck,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 const ButtonAdd = ({ title, handle }) => {
   return (
@@ -19,12 +21,12 @@ const ButtonAdd = ({ title, handle }) => {
   );
 };
 
-const ButtonEdit = ({ id, handle }) => {
+const ButtonEdit = ({ handle }) => {
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
-        handle(id);
+        handle();
       }}
       className="px-4 py-2 bg-blue-600  text-white rounded-md shadow "
     >
@@ -34,12 +36,12 @@ const ButtonEdit = ({ id, handle }) => {
   );
 };
 
-const ButtonDelete = ({ id, handle }) => {
+const ButtonDelete = ({ handle }) => {
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
-        handle(id);
+        handle();
       }}
       className="px-4 py-2 bg-red-600 text-white rounded-md shadow "
     >
@@ -49,12 +51,12 @@ const ButtonDelete = ({ id, handle }) => {
   );
 };
 
-const ButtonDetail = ({ id, handle }) => {
+const ButtonDetail = ({ handle }) => {
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
-        handle(id);
+        handle();
       }}
       className="px-4 py-2 bg-green-600 text-white rounded-md shadow "
     >
@@ -98,6 +100,40 @@ const ButtonSave = () => {
   );
 };
 
+const ButtonApprove = ({ handle }) => {
+  return (
+    <button
+      className="px-4 py-2 bg-green-600 text-white rounded-md shadow "
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        handle();
+      }}
+    >
+      <FontAwesomeIcon icon={faCheck} className="mr-2" />
+      Approve
+    </button>
+  );
+};
+
+const ButtonReject = ({ handle }) => {
+  console.log("handle", handle);
+
+  return (
+    <button
+      className="px-4 py-2 bg-red-600 text-white rounded-md shadow "
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        handle();
+      }}
+    >
+      <FontAwesomeIcon icon={faXmark} className="mr-2" />
+      Reject
+    </button>
+  );
+};
+
 export {
   ButtonAdd,
   ButtonEdit,
@@ -106,4 +142,6 @@ export {
   ButtonBack,
   ButtonCancel,
   ButtonSave,
+  ButtonApprove,
+  ButtonReject,
 };

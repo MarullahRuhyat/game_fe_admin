@@ -2,11 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 export default function Home() {
   const router = useRouter();
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
     if (!token) {
       router.push("/auth/login");
     }

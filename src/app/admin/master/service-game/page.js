@@ -214,12 +214,10 @@ export default function ServicePage() {
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center items-center space-x-2">
                             <ButtonEdit
-                              id={service.id}
-                              handle={handleEditService}
+                              handle={() => handleEditService(service.id)}
                             />
                             <ButtonDelete
-                              id={service.id}
-                              handle={handleDelete}
+                              handle={() => handleDelete(service.id)}
                             />
                           </div>
                         </td>

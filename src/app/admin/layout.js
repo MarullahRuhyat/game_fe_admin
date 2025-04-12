@@ -158,11 +158,15 @@ export default function UserLayout({ children }) {
                 <div className="sidebar-header relative z-30 flex h-[108px] w-full items-center border-b border-r border-b-[#F7F7F7] border-r-[#F7F7F7] pl-[50px] dark:border-darkblack-400">
                   <Link href="index.html">
                     <Image
+                      width={180}
+                      height={100}
                       src="/template/assets/images/logo/logo-color.svg"
                       className="block dark:hidden"
                       alt="logo"
                     />
                     <Image
+                      width={180}
+                      height={100}
                       src="/template/assets/images/logo/logo-white.svg"
                       className="hidden dark:block"
                       alt="logo"
@@ -244,11 +248,15 @@ export default function UserLayout({ children }) {
                   <div className="sidebar-header sticky top-0 z-20 flex h-[108px] w-full items-center justify-center border-b border-r border-b-[#F7F7F7] border-r-[#F7F7F7] bg-white dark:border-darkblack-500 dark:bg-darkblack-600">
                     <Link href="index.html">
                       <Image
+                        width={40}
+                        height={40}
                         src="/template/assets/images/logo/logo-short.svg"
                         className="block dark:hidden"
                         alt="logo"
                       />
                       <Image
+                        width={40}
+                        height={40}
                         src="/template/assets/images/logo/logo-short-white.svg"
                         className="hidden dark:block"
                         alt="logo"
@@ -428,6 +436,8 @@ export default function UserLayout({ children }) {
                         >
                           <div className="h-[52px] w-[52px] overflow-hidden rounded-xl border border-bgray-300">
                             <Image
+                              width={52}
+                              height={52}
                               className="object-cover"
                               src="/template/assets/images/avatar/profile-52x52.png"
                               alt="avater"
@@ -651,11 +661,15 @@ export default function UserLayout({ children }) {
                       <div>
                         <Link href="/">
                           <Image
+                            width={180}
+                            height={100}
                             src="/template/assets/images/logo/logo-color.svg"
                             className="block dark:hidden"
                             alt="logo"
                           />
                           <Image
+                            width={180}
+                            height={100}
                             src="/template/assets/images/logo/logo-white.svg"
                             className="hidden dark:block"
                             alt="logo"
@@ -667,6 +681,8 @@ export default function UserLayout({ children }) {
                       <div className="flex cursor-pointer space-x-0 lg:space-x-3">
                         <div className="h-[52px] w-[52px] overflow-hidden rounded-xl border border-bgray-300">
                           <Image
+                            width={52}
+                            height={52}
                             className="object-cover"
                             src="/template/assets/images/avatar/profile-52x52.png"
                             alt="avater"

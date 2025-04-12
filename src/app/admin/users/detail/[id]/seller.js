@@ -113,6 +113,8 @@ export default function Seller({ user }) {
         </h3>
         <div className="flex items-center mt-4">
           <Image
+            width={100}
+            height={100}
             src={
               user.image
                 ? `${api_url.base_url}${user.image}`

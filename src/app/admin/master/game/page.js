@@ -185,9 +185,10 @@ export default function GamePage() {
               </div>
             </div>
             <div className="table-content w-full overflow-x-auto ">
-              <div className="flex space-x-4 text-lg mb-4">
+              <div className="flex text-lg mb-4">
                 {tabs.map((tab) => (
                   <div
+                    style={{ margin: "10px" }}
                     key={tab.id}
                     className={`pb-2 cursor-pointer transition-all border-b-2 text-bgray-900 dark:text-bgray-50 ${
                       activeTab === tab.id
@@ -222,13 +223,13 @@ export default function GamePage() {
                         colSpan="3"
                         className="text-center text-gray-500 font-semibold py-4"
                       >
-                        Memuat service...
+                        Memuat game...
                       </td>
                     </tr>
                   ) : currentGames.length > 0 ? (
-                    currentGames.map((service, index) => (
+                    currentGames.map((game, index) => (
                       <tr
-                        key={service.id}
+                        key={game.id}
                         className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
                       >
                         <td className="px-6 py-5 xl:px-0">
@@ -238,16 +239,16 @@ export default function GamePage() {
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {service.name}
+                            {game.name}
                           </span>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {service.genre.name}
+                            {game.genre.name}
                           </span>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          {service.sensitif_game ? (
+                          {game.sensitif_game ? (
                             <span className="text-white text-[15px] font-semibold bg-red-700 p-1 rounded-lg">
                               Sensitif
                             </span>
@@ -256,7 +257,7 @@ export default function GamePage() {
                           )}
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          {service.popular ? (
+                          {game.popular ? (
                             <span className="text-white text-[15px] font-semibold bg-green-700 p-1 rounded-lg">
                               Populer
                             </span>
@@ -265,10 +266,12 @@ export default function GamePage() {
                           )}
                         </td>
                         <td className="px-6 py-5 xl:px-0 flex items-center justify-center">
-                          {service.image ? (
+                          {game.image ? (
                             <Image
-                              src={api_url.base_url + service.image}
-                              alt={service.name}
+                              width={100}
+                              height={100}
+                              src={api_url.base_url + game.image}
+                              alt={game.name}
                               className="w-16 h-16 object-cover rounded-lg"
                             />
                           ) : (
@@ -278,10 +281,10 @@ export default function GamePage() {
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center items-center space-x-2">
                             <ButtonEdit
-                              handle={() => handleEditGame(service.id)}
+                              handle={() => handleEditGame(game.id)}
                             />
                             <ButtonDelete
-                              handle={() => handleDelete(service.id)}
+                              handle={() => handleDelete(game.id)}
                             />
                           </div>
                         </td>
@@ -293,7 +296,7 @@ export default function GamePage() {
                         colSpan="3"
                         className="text-center text-gray-500 font-semibold py-4"
                       >
-                        Service tidak ditemukan
+                        Game tidak ditemukan
                       </td>
                     </tr>
                   )}

@@ -27,6 +27,8 @@ export default function User({ user }) {
         <h3 className="text-lg font-semibold text-gray-800">Informasi User</h3>
         <div className="flex items-center mt-4">
           <Image
+            width={100}
+            height={100}
             src="https://assets.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p3/70/2024/09/04/Cara-Ganti-Background-ML-Mobile-Legends-Terbaru-dan-Resikonya-1115390484.jpg"
             alt="Logo Toko - Jual Item Mobile Legends"
             className="w-16 h-16 rounded-full object-cover mr-4"

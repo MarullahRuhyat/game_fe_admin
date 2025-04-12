@@ -114,6 +114,8 @@ export default function Review({ user }) {
               <div key={index} className="border-b pb-4">
                 <div className="flex items-center">
                   <Image
+                    width={100}
+                    height={100}
                     src={
                       review.user.image
                         ? `${api_url.base_url}${review.user.image}`

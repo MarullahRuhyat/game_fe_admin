@@ -212,11 +212,14 @@ export default function GenrePage() {
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center items-center space-x-2">
                             <ButtonEdit
-                              id={genre.id}
-                              handle={handleEditGenre}
+                              handle={() => handleEditGenre(genre.id)}
                             />
 
-                            <ButtonDelete id={genre.id} handle={handleDelete} />
+                            <ButtonDelete
+                              handle={() => {
+                                handleDelete(genre.id);
+                              }}
+                            />
                           </div>
                         </td>
                       </tr>

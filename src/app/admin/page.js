@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MonthlyTransactionChart from "./monthlytransaction";
 import TotalUpChart from "@/component/totalUpChart";
 import Image from "next/image";
+import Swal from "sweetalert2";
 
 // Registering necessary components for Chart.js
 ChartJS.register(
@@ -34,82 +35,292 @@ export default function UserPage() {
 
   const topGames = {
     minggu: [
-      { name: "Mobile Legends", image: "/game/mlbb.png" },
-      { name: "Free Fire", image: "/game/freefire.png" },
-      { name: "PUBG", image: "/game/pubg.png" },
-      { name: "Genshin Impact", image: "/game/genshin.png" },
-      { name: "Valorant", image: "/game/valorant.png" },
-      { name: "CODM", image: "/game/codm.png" },
-      { name: "Roblox", image: "/game/roblox.png" },
-      { name: "Fortnite", image: "/game/fortnite.png" },
-      { name: "Clash of Clans", image: "/game/coc.png" },
-      { name: "Apex Legends", image: "/game/apex.png" },
+      {
+        name: "Mobile Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Free Fire",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "PUBG",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Genshin Impact",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Valorant",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "CODM",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Roblox",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Fortnite",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Clash of Clans",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Apex Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
     ],
 
     bulan: [
       /* ... */
-      { name: "Free Fire", image: "/game/freefire.png" },
-      { name: "Mobile Legends", image: "/game/mlbb.png" },
-      { name: "PUBG", image: "/game/pubg.png" },
-      { name: "Genshin Impact", image: "/game/genshin.png" },
-      { name: "CODM", image: "/game/codm.png" },
-      { name: "Roblox", image: "/game/roblox.png" },
-      { name: "Valorant", image: "/game/valorant.png" },
-      { name: "Fortnite", image: "/game/fortnite.png" },
-      { name: "Clash of Clans", image: "/game/coc.png" },
-      { name: "Apex Legends", image: "/game/apex.png" },
+      {
+        name: "Free Fire",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Mobile Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "PUBG",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Genshin Impact",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "CODM",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Roblox",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Valorant",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Fortnite",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Clash of Clans",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Apex Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
     ],
     semua: [
       /* ... */
-      { name: "Roblox", image: "/game/roblox.png" },
-      { name: "Mobile Legends", image: "/game/mlbb.png" },
-      { name: "Free Fire", image: "/game/freefire.png" },
-      { name: "PUBG", image: "/game/pubg.png" },
-      { name: "CODM", image: "/game/codm.png" },
-      { name: "Genshin Impact", image: "/game/genshin.png" },
-      { name: "Valorant", image: "/game/valorant.png" },
-      { name: "Fortnite", image: "/game/fortnite.png" },
-      { name: "Clash of Clans", image: "/game/coc.png" },
-      { name: "Apex Legends", image: "/game/apex.png" },
+      {
+        name: "Roblox",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Mobile Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Free Fire",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "PUBG",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "CODM",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Genshin Impact",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Valorant",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Fortnite",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Clash of Clans",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
+      {
+        name: "Apex Legends",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+      },
     ],
   };
 
   const topSellers = {
     minggu: [
-      { name: "GameZone", image: "/sellers/a.jpg", total: 128 },
-      { name: "TopUpHero", image: "/sellers/b.jpg", total: 120 },
-      { name: "LevelUpStore", image: "/sellers/c.jpg", total: 115 },
-      { name: "DiamondKing", image: "/sellers/d.jpg", total: 110 },
-      { name: "EZTopUp", image: "/sellers/e.jpg", total: 105 },
-      { name: "FastTopUp", image: "/sellers/f.jpg", total: 98 },
-      { name: "ArenaStore", image: "/sellers/g.jpg", total: 95 },
-      { name: "PlayCentral", image: "/sellers/h.jpg", total: 92 },
-      { name: "GGStore", image: "/sellers/i.jpg", total: 88 },
-      { name: "XPBoost", image: "/sellers/j.jpg", total: 84 },
+      {
+        name: "GameZone",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 128,
+      },
+      {
+        name: "TopUpHero",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 120,
+      },
+      {
+        name: "LevelUpStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 115,
+      },
+      {
+        name: "DiamondKing",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 110,
+      },
+      {
+        name: "EZTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 105,
+      },
+      {
+        name: "FastTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 98,
+      },
+      {
+        name: "ArenaStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 95,
+      },
+      {
+        name: "PlayCentral",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 92,
+      },
+      {
+        name: "GGStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 88,
+      },
+      {
+        name: "XPBoost",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 84,
+      },
     ],
     bulan: [
-      { name: "DiamondKing", image: "/sellers/d.jpg", total: 498 },
-      { name: "TopUpHero", image: "/sellers/b.jpg", total: 475 },
-      { name: "EZTopUp", image: "/sellers/e.jpg", total: 462 },
-      { name: "LevelUpStore", image: "/sellers/c.jpg", total: 450 },
-      { name: "GameZone", image: "/sellers/a.jpg", total: 440 },
-      { name: "XPBoost", image: "/sellers/j.jpg", total: 430 },
-      { name: "PlayCentral", image: "/sellers/h.jpg", total: 428 },
-      { name: "FastTopUp", image: "/sellers/f.jpg", total: 420 },
-      { name: "ArenaStore", image: "/sellers/g.jpg", total: 417 },
-      { name: "GGStore", image: "/sellers/i.jpg", total: 410 },
+      {
+        name: "DiamondKing",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 498,
+      },
+      {
+        name: "TopUpHero",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 475,
+      },
+      {
+        name: "EZTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 462,
+      },
+      {
+        name: "LevelUpStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 450,
+      },
+      {
+        name: "GameZone",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 440,
+      },
+      {
+        name: "XPBoost",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 430,
+      },
+      {
+        name: "PlayCentral",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 428,
+      },
+      {
+        name: "FastTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 420,
+      },
+      {
+        name: "ArenaStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 417,
+      },
+      {
+        name: "GGStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 410,
+      },
     ],
     semua: [
-      { name: "GameZone", image: "/sellers/a.jpg", total: 1845 },
-      { name: "TopUpHero", image: "/sellers/b.jpg", total: 1800 },
-      { name: "LevelUpStore", image: "/sellers/c.jpg", total: 1725 },
-      { name: "DiamondKing", image: "/sellers/d.jpg", total: 1690 },
-      { name: "EZTopUp", image: "/sellers/e.jpg", total: 1612 },
-      { name: "FastTopUp", image: "/sellers/f.jpg", total: 1578 },
-      { name: "ArenaStore", image: "/sellers/g.jpg", total: 1505 },
-      { name: "PlayCentral", image: "/sellers/h.jpg", total: 1470 },
-      { name: "GGStore", image: "/sellers/i.jpg", total: 1432 },
-      { name: "XPBoost", image: "/sellers/j.jpg", total: 1398 },
+      {
+        name: "GameZone",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1845,
+      },
+      {
+        name: "TopUpHero",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1800,
+      },
+      {
+        name: "LevelUpStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1725,
+      },
+      {
+        name: "DiamondKing",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1690,
+      },
+      {
+        name: "EZTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1612,
+      },
+      {
+        name: "FastTopUp",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1578,
+      },
+      {
+        name: "ArenaStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1505,
+      },
+      {
+        name: "PlayCentral",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1470,
+      },
+      {
+        name: "GGStore",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1432,
+      },
+      {
+        name: "XPBoost",
+        image: "/template/assets/images/avatar/profile-52x52.png",
+        total: 1398,
+      },
     ],
   };
 
@@ -121,6 +332,8 @@ export default function UserPage() {
           className="flex items-center space-x-3 bg-gray-50 rounded-lg p-2 dark:bg-darkblack-500"
         >
           <Image
+            width={52}
+            height={52}
             src={game.image}
             alt={game.name}
             className="w-10 h-10 rounded-full object-cover"
@@ -142,6 +355,8 @@ export default function UserPage() {
         >
           <div className="flex items-center space-x-3">
             <Image
+              width={52}
+              height={52}
               src={seller.image}
               alt={seller.name}
               className="w-10 h-10 rounded-full object-cover"
@@ -181,6 +396,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-pengguna.svg"
                           alt="icon"
                         />
@@ -206,6 +423,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-penjual.svg"
                           alt="icon"
                         />
@@ -231,6 +450,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-transaksi.svg"
                           alt="icon"
                         />
@@ -256,6 +477,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-earn.svg"
                           alt="icon"
                         />
@@ -281,6 +504,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-produk.svg"
                           alt="icon"
                         />
@@ -306,6 +531,8 @@ export default function UserPage() {
                     <div className="icon">
                       <span>
                         <Image
+                          width={50}
+                          height={50}
                           src="/template/assets/images/icons/total-game.svg"
                           alt="icon"
                         />
@@ -342,10 +569,10 @@ export default function UserPage() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveGameTab(tab.key)}
-                  className={`px-3 py-1 rounded-full text-sm ${
+                  className={`px-3 py-1 rounded-full text-white text-sm ${
                     activeGameTab === tab.key
-                      ? "bg-purple-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-purple-500 "
+                      : "bg-gray-200 "
                   }`}
                 >
                   {tab.label}
@@ -367,10 +594,10 @@ export default function UserPage() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveSellerTab(tab.key)}
-                  className={`px-3 py-1 rounded-full text-sm ${
+                  className={`px-3 py-1 rounded-full text-white text-sm ${
                     activeSellerTab === tab.key
-                      ? "bg-purple-500 text-white"
-                      : "bg-gray-200 text-gray-700"
+                      ? "bg-purple-500 "
+                      : "bg-gray-200 "
                   }`}
                 >
                   {tab.label}

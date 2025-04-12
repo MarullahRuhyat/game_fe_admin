@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import api_url from "@/api_url";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import { Input } from "@/component/input";
+import { ButtonReject, ButtonApprove } from "@/component/button";
 
 export default function WithdrawPage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function WithdrawPage() {
   const [loading, setLoading] = useState(true);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
+  const [showResult, setShowResult] = useState(false);
 
   const fetchWithdraws = async (url = null) => {
     setLoading(true);
@@ -136,6 +139,10 @@ export default function WithdrawPage() {
         inputAttributes: {
           "aria-label": "Alasan penolakan",
         },
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Kirim",
+        cancelButtonText: "Batal",
         showCancelButton: true,
       });
 
@@ -184,136 +191,269 @@ export default function WithdrawPage() {
     }
   };
 
+  const listHeaderTable = [
+    "No",
+    "Nama Pengguna",
+    "Jumlah",
+    "Status",
+    "Tanggal",
+    "Aksi",
+  ];
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Daftar Penarikan Saldo</h2>
-      <div className="flex items-center justify-between my-4">
-        <select
-          value={pageSize}
-          onChange={handlePageSizeChange}
-          className="px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-        >
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
+    <div className="2xl:flex 2xl:space-x-[48px]">
+      <section className="mb-6 2xl:mb-0 2xl:flex-1">
+        <div className="w-full rounded-lg bg-white px-[24px] py-[20px] dark:bg-darkblack-600">
+          <div className="flex flex-col space-y-10 md:space-y-0">
+            <div className="filter-content w-full">
+              <div className="w-full">
+                <div className="relative space-y-5 md:space-y-0 h-[56px] w-full flex flex-col md:flex-row  md:items-center md:justify-between">
+                  {/* button tambah */}
+                  <Input
+                    type="text"
+                    placeholder="Cari berdasarkan nama"
+                    value={searchName}
+                    handle={handleSearchChange}
+                    name="search"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="table-content w-full overflow-x-auto ">
+              <table className="w-full ">
+                <thead className="bg-bgray-50 dark:bg-darkblack-500">
+                  <tr className="border-b border-bgray-300 dark:border-darkblack-400">
+                    {listHeaderTable.map((header, index) => (
+                      <td className="px-6 py-5 xl:px-0 text-center" key={index}>
+                        <div className="flex justify-center w-full items-center space-x-2.5">
+                          <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                            {header}
+                          </span>
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </thead>
 
-        <input
-          type="text"
-          placeholder="Cari nama pengguna..."
-          value={searchName}
-          onChange={handleSearchChange}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-        />
-      </div>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Memuat service...
+                      </td>
+                    </tr>
+                  ) : withdraws.length > 0 ? (
+                    withdraws.map((withdraw, index) => (
+                      <tr
+                        key={withdraw.id}
+                        className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
+                      >
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {(pageActive - 1) * pageSize + index + 1}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {withdraw.user.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            Rp{" "}
+                            {parseFloat(withdraw.amount).toLocaleString(
+                              "id-ID"
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span
+                            className={`text-base font-medium ${
+                              withdraw.status === "approved"
+                                ? "text-green-500"
+                                : withdraw.status === "pending"
+                                ? "text-yellow-500"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {withdraw.status === "approved"
+                              ? "Berhasil"
+                              : withdraw.status === "pending"
+                              ? "Pending"
+                              : "Gagal"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {new Date(withdraw.created_at).toLocaleDateString(
+                              "id-ID"
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          {withdraw.status === "pending" ? (
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAction(withdraw.id, "approve");
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAction(withdraw.id, "reject");
+                                }}
+                                className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        className="text-center text-gray-500 font-semibold py-4"
+                      >
+                        Service tidak ditemukan
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="w-full flex lg:justify-between justify-center items-center">
+              <div className="lg:flex hidden space-x-4 items-center">
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="px-2.5 py-[14px] border rounded-lg border-bgray-300 dark:border-darkblack-400 flex space-x-6 items-center"
+                    onClick={() => {
+                      setShowResult(!showResult);
+                    }}
+                  >
+                    <span className="text-sm font-semibold text-bgray-900 dark:text-bgray-50">
+                      {pageSize}
+                    </span>
+                    <span>
+                      <svg
+                        width="17"
+                        height="17"
+                        viewBox="0 0 17 17"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M4.03516 6.03271L8.03516 10.0327L12.0352 6.03271"
+                          stroke="#A0AEC0"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                    </span>
+                  </button>
+                  <div
+                    className="rounded-lg w-full shadow-lg bg-white absolute right-0 z-10 top-14 overflow-hidden hidden"
+                    style={{
+                      display: showResult ? "block" : "none",
+                    }}
+                  >
+                    <ul>
+                      <li
+                        className="text-sm font-medium text-bgray-900 cursor-pointer px-5 py-2 hover:bg-bgray-100 "
+                        onClick={() => {
+                          setPageSize(10);
+                          setPageActive(1);
+                          setShowResult(false);
+                        }}
+                      >
+                        10
+                      </li>
+                      <li
+                        className="text-sm font-medium text-bgray-900 cursor-pointer px-5 py-2 hover:bg-bgray-100 "
+                        onClick={() => {
+                          setPageSize(25);
+                          setPageActive(1);
+                          setShowResult(false);
+                        }}
+                      >
+                        25
+                      </li>
 
-      <div className="overflow-x-auto mt-2">
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Nama Pengguna</th>
-              <th className="px-4 py-2">Jumlah</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Tanggal</th>
-              <th className="px-4 py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
-                  Memuat data...
-                </td>
-              </tr>
-            ) : withdraws.length > 0 ? (
-              withdraws.map((withdraw, index) => (
-                <tr key={withdraw.id}>
-                  <td className="border px-4 py-2 text-center">
-                    {(pageActive - 1) * pageSize + index + 1}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {withdraw.user.name}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    Rp {parseFloat(withdraw.amount).toLocaleString("id-ID")}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {withdraw.status === "approved" ? (
-                      <span className="bg-green-500 text-white px-2 py-1 rounded-md">
-                        Berhasil
-                      </span>
-                    ) : withdraw.status === "pending" ? (
-                      <span className="bg-yellow-500 text-white px-2 py-1 rounded-md">
-                        Pending
-                      </span>
-                    ) : (
-                      <span className="bg-red-500 text-white px-2 py-1 rounded-md">
-                        Gagal
-                      </span>
+                      <li
+                        className="text-sm font-medium text-bgray-900 cursor-pointer px-5 py-2 hover:bg-bgray-100 "
+                        onClick={() => {
+                          setPageSize(50);
+                          setPageActive(1);
+                          setShowResult(false);
+                        }}
+                      >
+                        50
+                      </li>
+                      <li
+                        className="text-sm font-medium text-bgray-900 cursor-pointer px-5 py-2 hover:bg-bgray-100 "
+                        onClick={() => {
+                          setPageSize(100);
+                          setPageActive(1);
+                          setShowResult(false);
+                        }}
+                      >
+                        100
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div className="pagination-content w-full">
+                <div className="flex w-full items-center justify-end">
+                  <div className="flex items-center ">
+                    {prevPage && (
+                      <button
+                        style={{ margin: "3px" }}
+                        type="button"
+                        onClick={() => handlePagination(prevPage)}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      >
+                        <span>Sebelumnya</span>
+                      </button>
                     )}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {new Date(withdraw.created_at).toLocaleDateString("id-ID")}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {withdraw.status === "pending" ? (
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleAction(withdraw.id, "approve")}
-                          className="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleAction(withdraw.id, "reject")}
-                          className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    ) : (
-                      "-"
+                    <button
+                      style={{ margin: "3px" }}
+                      type="button"
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
+                    >
+                      <span>{pageActive}</span>
+                    </button>
+                    {nextPage && (
+                      <button
+                        style={{ margin: "3px" }}
+                        type="button"
+                        onClick={() => handlePagination(nextPage)}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      >
+                        <span>Selanjutnya</span>
+                      </button>
                     )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
-                  Tidak ada data penarikan
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-end mt-4">
-        {prevPage && (
-          <button
-            onClick={() => handlePagination(prevPage)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Prev
-          </button>
-        )}
-        <button
-          key={pageActive}
-          className="px-4 py-2 mx-1 rounded-md shadow bg-blue-600 text-white"
-        >
-          {pageActive}
-        </button>
-        {nextPage && (
-          <button
-            onClick={() => handlePagination(nextPage)}
-            className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-          >
-            Next
-          </button>
-        )}
-      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
