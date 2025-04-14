@@ -19,7 +19,7 @@ export default function GamePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("");
-  const itemsPerPage = 10;
+  const itemsPerPage = 1;
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -311,7 +311,7 @@ export default function GamePage() {
                       style={{ margin: "3px" }}
                       type="button"
                       onClick={() => paginate(currentPage - 1)}
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
                       <span>Sebelumnya</span>
                     </button>
@@ -326,8 +326,8 @@ export default function GamePage() {
                         onClick={() => paginate(page)}
                         className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out ${
                           currentPage === page
-                            ? "bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
-                            : "text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
+                            ? "bg-purple-500 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
+                            : "text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
                         }`}
                       >
                         {page}
@@ -338,9 +338,9 @@ export default function GamePage() {
                     <button
                       style={{ margin: "3px" }}
                       onClick={() => paginate(currentPage + 1)}
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200   hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
-                      Selanjutnya
+                      Selanjutnyas
                     </button>
                   )}
                 </div>

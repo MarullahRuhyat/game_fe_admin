@@ -6,6 +6,10 @@ import Transaction from "./transaction";
 import Review from "./review";
 import api_url from "@/api_url";
 import Image from "next/image";
+import { ButtonBack } from "@/component/button";
+import TotalUpChart from "@/component/totalUpChart";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faTrophy } from "@fortawesome/free-solid-svg-icons";
 
 export default function Seller({ user }) {
   const { id } = useParams();
@@ -20,139 +24,246 @@ export default function Seller({ user }) {
     setActiveTab(tabId);
   };
 
+  console.log(user.seller.color_level);
+
   return (
-    <div className=" p-2">
-      {/* tombol kembali */}
-      <div className="flex items-center mb-4">
-        <button
-          className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300"
-          onClick={() => router.push("/admin/users")}
-        >
-          <i className="fa fa-arrow-left mr-2"></i>
-          Kembali
-        </button>
-      </div>
+    <>
+      <div className="2xl:flex 2xl:space-x-[48px]">
+        {/* tombol kembali */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {/* Total produk */}
-        <div className="bg-white border  shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Total Produk</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">
-            {user.seller.total_products}
-          </p>
-        </div>
-
-        {/* Total ulasan */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Total Ulasan</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">
-            {user.seller.total_reviews}
-          </p>
-        </div>
-
-        {/* Total Transaksi */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Total Transaksi
-          </h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">10</p>
-        </div>
-
-        {/* saldo */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Saldo</h3>
-          <p className="text-3xl font-bold text-gray-900 mt-4">
-            Rp {parseFloat(user.saldo).toLocaleString("id-ID")}
-          </p>
-        </div>
-
-        {/* Rating bintang */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Rating Bintang
-          </h3>
-          <div className="flex mt-4 ">
-            <p className="text-3xl font-bold  ">{user.seller.average_rating}</p>
-            <div className="flex items-center  text-[#ffb600]">
-              <span className=" text-2xl ml-2">
-                <i className="fa fa-star"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* level silver */}
-        <div className="bg-white border shadow-lg rounded-lg p-6 flex flex-col items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Level</h3>
-          {/* icon piala */}
-          <div className="flex mt-4">
-            <span className="text-3xl font-bold">{user.seller_level}</span>
-            <div
-              className={`flex items-center ${
-                user.seller_level === "Bronze"
-                  ? "text-[#cd7f32]"
-                  : user.seller_level === "Silver"
-                  ? "text-[#c0c0c0]"
-                  : user.seller_level === "Gold"
-                  ? "text-[#ffd700]"
-                  : "text-gray-400"
-              }`}
-            >
-              <span className="text-2xl ml-2">
-                <i className="fa fa-trophy"></i>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* card informasi seller */}
-      <div className="bg-white border shadow-lg rounded-lg p-6 mt-8">
-        <h3 className="text-lg font-semibold text-gray-800">
-          Informasi Seller
-        </h3>
-        <div className="flex items-center mt-4">
-          <Image
-            width={100}
-            height={100}
-            src={
-              user.image
-                ? `${api_url.base_url}${user.image}`
-                : user.social_image
-            }
-            alt="Logo Toko - Jual Item Mobile Legends"
-            className="w-16 h-16 rounded-full object-cover mr-4"
-            loading="lazy"
+        <section className="mb-6 2xl:mb-0 2xl:flex-1">
+          <ButtonBack
+            handle={() => router.push("/admin/users")}
+            className="bg-gray-500   text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300"
           />
-          <div>
-            <h4 className="text-xl font-semibold text-gray-900">{user.name}</h4>
-            <p className="text-gray-600">{user.email}</p>
+          <div className="mb-[24px] mt-[24px] w-full">
+            <div className="grid grid-cols-1 gap-[24px] lg:grid-cols-3">
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-produk.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Produk
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      {user.seller.total_products}
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-penjual.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Ulasan
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      {user.seller.total_reviews}
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-transaksi.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Total Transaksi
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      {user.seller.total_transactions}
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-earn.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Saldo
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      Rp {parseFloat(user.saldo).toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-produk.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Rating Bintang
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      {user.seller.average_rating}
+                      <span className="ml-2 text-[#ffb600]">
+                        <FontAwesomeIcon icon={faStar} />
+                      </span>
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center space-x-[7px]">
+                    <div className="icon">
+                      <span>
+                        <Image
+                          width={50}
+                          height={50}
+                          src="/template/assets/images/icons/total-game.svg"
+                          alt="icon"
+                        />
+                      </span>
+                    </div>
+                    <span className="text-lg font-semibold text-bgray-900 dark:text-white">
+                      Level
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
+                      {user.seller_level}
+                      <span
+                        className={`ml-2 text-[${user.seller.color_level}]`}
+                      >
+                        <FontAwesomeIcon icon={faTrophy} />
+                      </span>
+                    </p>
+                  </div>
+                  <TotalUpChart />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      {/* card informasi seller */}
+      <div className="mb-6 2xl:mb-0 2xl:flex-1">
+        <div className="rounded-lg bg-white p-5 dark:bg-darkblack-600">
+          <h3 className="text-lg font-semibold text-bgray-900 dark:text-white">
+            Informasi Seller
+          </h3>
+          <div className="flex items-center mt-4">
+            <Image
+              width={100}
+              height={100}
+              src={
+                user.image
+                  ? `${api_url.base_url}${user.image}`
+                  : user.social_image
+              }
+              alt="Logo Toko - Jual Item Mobile Legends"
+              className="w-16 h-16 rounded-full object-cover mr-4"
+              loading="lazy"
+            />
+            <div>
+              <h4 className="text-xl font-semibold text-bgray-900 dark:text-white">
+                {user.name}
+              </h4>
+              <p className="text-bgray-500">{user.email}</p>
+            </div>
           </div>
         </div>
+        <div className="flex mt-4  text-lg">
+          {tabs.map((tab) => (
+            <div
+              style={{
+                cursor: "pointer",
+                transition: "all 0.3s",
+                marginRight: "20px",
+              }}
+              // className={`pb-2 cursor-pointer transition-all border-b-2 ${
+              key={tab.id}
+              className={`pb-2 cursor-pointer transition-all border-b-2 text-bgray-900 dark:text-bgray-50 ${
+                activeTab === tab.id
+                  ? " border-purple-300 font-semibold"
+                  : "border-transparent "
+              }`}
+              onClick={() => handleActiveTab(tab.id)}
+            >
+              {tab.title}
+            </div>
+          ))}
+        </div>
+        {activeTab === "Produk" && <Product user={user} />}
+        {activeTab === "Transaksi" && <Transaction user={user} />}
+        {activeTab === "Ulasan" && <Review user={user} />}
       </div>
-      <div className="flex  mt-4 space-x-4 text-lg">
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`pb-2 cursor-pointer transition-all border-b-2 ${
-              activeTab === tab.id
-                ? "text-black border-black font-semibold"
-                : "text-gray-500 border-transparent hover:text-black"
-            }`}
-            onClick={() => handleActiveTab(tab.id)}
-          >
-            {tab.title}
-          </div>
-        ))}
-      </div>
-
-      {activeTab === "Produk" && <Product user={user} />}
-
-      {/* table transaksi */}
-      {activeTab === "Transaksi" && <Transaction user={user} />}
-
-      {/* ulasan */}
-      {activeTab === "Ulasan" && <Review user={user} />}
-    </div>
+    </>
   );
 }

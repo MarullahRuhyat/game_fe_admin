@@ -244,7 +244,7 @@ export default function ServicePage() {
                       style={{ margin: "3px" }}
                       type="button"
                       onClick={() => paginate(currentPage - 1)}
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
                       <span>Sebelumnya</span>
                     </button>
@@ -259,8 +259,8 @@ export default function ServicePage() {
                         onClick={() => paginate(page)}
                         className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out ${
                           currentPage === page
-                            ? "bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
-                            : "text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
+                            ? "bg-purple-500 text-white  lg:px-6 lg:py-2.5 lg:text-sm"
+                            : "text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm"
                         }`}
                       >
                         {page}
@@ -271,7 +271,7 @@ export default function ServicePage() {
                     <button
                       style={{ margin: "3px" }}
                       onClick={() => paginate(currentPage + 1)}
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
                       Selanjutnya
                     </button>

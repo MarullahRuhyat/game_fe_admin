@@ -3,6 +3,8 @@ import React, { use, useEffect, useState } from "react";
 import api_url from "@/api_url";
 import Swal from "sweetalert2";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 export default function Product({ user }) {
   const [products, setProducts] = useState([]);
@@ -94,7 +96,7 @@ export default function Product({ user }) {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2    xl:grid-cols-4  gap-3 mt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2    xl:grid-cols-4  gap-3 mt-8">
             {products.map((product) => (
               <article
                 key={product.id}
@@ -127,7 +129,7 @@ export default function Product({ user }) {
                         {product.name}
                       </h2>
                       <p className="text-[#ffb600] font-semibold text-md">
-                        Rp {product.price}
+                        Rp {parseFloat(product.price).toLocaleString("id-ID")}
                       </p>
                     </div>
                   </div>
@@ -152,7 +154,7 @@ export default function Product({ user }) {
                       <span className="mr-1">
                         ({product.user.total_reviews})
                       </span>
-                      <i className="fa fa-star"></i>
+                      <FontAwesomeIcon icon={faStar} />
                     </div>
                   </footer>
                 </section>
@@ -165,24 +167,29 @@ export default function Product({ user }) {
           <div className="flex justify-center mt-4">
             {prevPage && (
               <button
+                style={{ margin: "3px" }}
+                type="button"
                 onClick={() => handlePagination(prevPage)}
-                className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+                className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
               >
-                Prev
+                <span>Sebelumnya</span>
               </button>
             )}
             <button
-              key={pageActive}
-              className={`px-4 py-2 mx-1 rounded-md shadow bg-blue-600 "`}
+              style={{ margin: "3px" }}
+              type="button"
+              className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-500 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
             >
-              <p className="text-white font-semibold">{pageActive}</p>
+              <span>{pageActive}</span>
             </button>
             {nextPage && (
               <button
+                style={{ margin: "3px" }}
+                type="button"
                 onClick={() => handlePagination(nextPage)}
-                className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
+                className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
               >
-                Next
+                <span>Selanjutnya</span>
               </button>
             )}
           </div>

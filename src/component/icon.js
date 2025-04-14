@@ -121,6 +121,52 @@ const SellerIcon = function () {
   );
 };
 
+const SensitiveGameIcon = function () {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Gamepad Base */}
+      <rect x="3" y="8" width="18" height="10" rx="3" fill="#1A202C" />
+
+      {/* Left Button (D-pad) */}
+      <path
+        d="M7 12H9M8 11V13"
+        stroke="#6A0DAD"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        className="path-1"
+      />
+
+      {/* Right Buttons */}
+      <circle cx="16" cy="11" r="1" fill="#6A0DAD" />
+      <circle cx="18" cy="13" r="1" fill="#6A0DAD" />
+
+      {/* Sensitivity/Eye-Off Symbol */}
+      <path
+        d="M2 20C4 17 8 15 12 15C16 15 20 17 22 20"
+        stroke="#6A0DAD"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        className="path-2"
+      />
+      <line
+        x1="2"
+        y1="20"
+        x2="22"
+        y2="20"
+        stroke="#6A0DAD"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
 const GameIcon = function () {
   return (
     <svg
@@ -224,4 +270,5 @@ export {
   GameIcon,
   GameServiceIcon,
   GameGenreIcon,
+  SensitiveGameIcon,
 };

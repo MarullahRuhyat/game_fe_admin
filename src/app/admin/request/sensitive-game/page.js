@@ -1,51 +1,75 @@
 "use client";
 
-import api_url from "@/api_url";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/component/input";
-import { ButtonDetail } from "@/component/button";
-
+import api_url from "@/api_url";
 import Swal from "sweetalert2";
+import Cookies from "js-cookie";
+import Image from "next/image";
+import { Input } from "@/component/input";
+import { ButtonApprove, ButtonReject } from "@/component/button";
 
-export default function UserPage() {
+export default function SensitiveGamePage() {
   const router = useRouter();
 
-  const [users, setUsers] = useState([]);
-  const [userCount, setUserCount] = useState(0);
-  const [pageSize, setPageSize] = useState(10); // NEW
-  const [searchName, setSearchName] = useState(""); // NEW
-  const [loading, setLoading] = useState(true);
+  const [sellerApplications, setSellerApplications] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
   const [pageActive, setPageActive] = useState(1);
+  const [searchName, setSearchName] = useState("");
+  const [loading, setLoading] = useState(true);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showResult, setShowResult] = useState(false);
 
-  const [tabs, setTabs] = useState([
-    { id: "all", title: "Semua", count: 0 },
-    { id: "seller", title: "Penjual", count: 0 },
-  ]);
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
-
-  const fetchUsers = async (url = null) => {
+  const fetchSellerApplications = async (url = null) => {
     setLoading(true);
-    let query_params = `?page=${pageActive}&page_size=${pageSize}`;
-    if (activeTab === "seller") {
-      query_params += "&seller=true";
+    const token = Cookies.get("token");
+    if (!token) {
+      Swal.fire({
+        icon: "error",
+        confirmButtonColor: "#dc3545",
+        title: "Gagal",
+        text: "Anda tidak memiliki akses, silahkan login",
+      });
+      router.push("/login");
+      return;
     }
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+    let query = `?type=sensitive_game&page=${pageActive}&page_size=${pageSize}`;
     if (searchName) {
-      query_params += `&name=${encodeURIComponent(searchName)}`;
+      query += `&search=${encodeURIComponent(searchName)}`;
     }
-    if (url == null) {
-      url = `${api_url.user}${query_params}`;
+
+    if (!url) {
+      url = `${api_url.sellerApplication}${query}`;
     }
 
     try {
-      const res = await fetch(url);
-      const data = await res.json();
-      setNextPage(data.next);
-      setPrevPage(data.previous);
+      const res = await fetch(url, {
+        method: "GET",
+        headers: headers,
+      });
+      console.log(res);
+      if (res.status === 401 || res.status === 403) {
+        Swal.fire({
+          icon: "error",
+          confirmButtonColor: "#dc3545",
+          title: "Gagal",
+          text: "Sesi anda sudah habis, silahkan login",
+        });
+        Cookies.remove("token");
+        router.push("/auth/login");
+        return;
+      }
 
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await res.json();
       if (data.next === null && data.previous === null) {
         setPageActive(1);
       }
@@ -74,24 +98,17 @@ export default function UserPage() {
         setPageActive(parseInt(page) - 1);
       }
 
-      setUsers(data.results);
-      setUserCount(data.count);
-      setTabs((prevTabs) =>
-        prevTabs.map((tab) => {
-          if (tab.id === "all") {
-            return { ...tab, count: data.user };
-          } else if (tab.id === "seller") {
-            return { ...tab, count: data.seller };
-          }
-          return tab;
-        })
-      );
-    } catch (err) {
+      setSellerApplications(data.results);
+      setNextPage(data.next);
+      setPrevPage(data.previous);
+    } catch (error) {
+      console.log(error);
+
       Swal.fire({
         icon: "error",
         confirmButtonColor: "#dc3545",
-        title: "Error",
-        text: "Gagal memuat pengguna, server tidak merespon",
+        title: "Gagal",
+        text: "Tidak bisa mengambil data sellerApplication",
       });
     } finally {
       setLoading(false);
@@ -99,8 +116,8 @@ export default function UserPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [pageSize, activeTab, searchName]);
+    fetchSellerApplications();
+  }, [pageSize, pageActive, searchName]);
 
   const handleSearchChange = (e) => {
     setSearchName(e.target.value);
@@ -115,17 +132,89 @@ export default function UserPage() {
     }
   };
 
-  const handleActiveTab = (tabId) => {
-    setActiveTab(tabId);
-    setPageActive(1);
-  };
-
   const handlePagination = (url) => {
     setLoading(true);
-    fetchUsers(url);
+    fetchSellerApplications(url);
   };
 
-  const listHeaderTable = ["No", "Nama", "email", "role", "Status", "Aksi"];
+  const handleAction = async (id, action) => {
+    const token = Cookies.get("token");
+    if (!token) {
+      Swal.fire("Gagal", "Anda tidak memiliki akses", "error");
+      return;
+    }
+
+    let reason = "";
+
+    if (action === "reject") {
+      const { value: text } = await Swal.fire({
+        title: "Alasan Penolakan",
+        input: "textarea",
+        inputLabel: "Tulis alasan mengapa penarikan ditolak",
+        inputPlaceholder: "Contoh: Data tidak valid, akun mencurigakan, dll.",
+        inputAttributes: {
+          "aria-label": "Alasan penolakan",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Kirim",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+      });
+
+      if (!text) return;
+      reason = text;
+    } else {
+      const confirm = await Swal.fire({
+        title: `Konfirmasi`,
+        text: `Yakin ingin menyetujui penarikan ini?`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: `Ya, approve`,
+      });
+      console.log("confirm", confirm);
+
+      if (!confirm.isConfirmed) return;
+    }
+
+    const payload = {
+      reason: reason,
+      status: action === "approve" ? "approved" : "failed",
+    };
+
+    try {
+      const res = await fetch(`${api_url.sellerApplication}${id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal memproses aksi");
+      }
+
+      Swal.fire("Berhasil", `Penarikan berhasil di-${action}`, "success");
+      fetchSellerApplications(); // Refresh data
+    } catch (err) {
+      Swal.fire("Gagal", "Terjadi kesalahan saat memproses", "error");
+    }
+  };
+
+  const listHeaderTable = [
+    "No",
+    "Nama",
+    "Selfi KTP",
+    "Status",
+    "Tanggal",
+    "Aksi",
+  ];
+
+  console.log("sellerApplications", sellerApplications);
 
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
@@ -147,22 +236,6 @@ export default function UserPage() {
               </div>
             </div>
             <div className="table-content w-full overflow-x-auto ">
-              <div className="flex text-lg mb-4">
-                {tabs.map((tab) => (
-                  <div
-                    style={{ margin: "10px" }}
-                    key={tab.id}
-                    className={`pb-2 cursor-pointer transition-all border-b-2 text-bgray-900 dark:text-bgray-50 ${
-                      activeTab === tab.id
-                        ? " border-purple-300 font-semibold"
-                        : "border-transparent "
-                    }`}
-                    onClick={() => handleActiveTab(tab.id)}
-                  >
-                    {tab.title}
-                  </div>
-                ))}
-              </div>
               <table className="w-full ">
                 <thead className="bg-bgray-50 dark:bg-darkblack-500">
                   <tr className="border-b border-bgray-300 dark:border-darkblack-400">
@@ -188,10 +261,10 @@ export default function UserPage() {
                         Memuat service...
                       </td>
                     </tr>
-                  ) : users.length > 0 ? (
-                    users.map((user, index) => (
+                  ) : sellerApplications.length > 0 ? (
+                    sellerApplications.map((seller, index) => (
                       <tr
-                        key={user.id}
+                        key={seller.id}
                         className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
                       >
                         <td className="px-6 py-5 xl:px-0">
@@ -201,42 +274,61 @@ export default function UserPage() {
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.name}
+                            {seller.user.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <div className="flex justify-center items-center">
+                            <Image
+                              width={100}
+                              height={100}
+                              src={`${seller.selfie_with_id}`}
+                              alt="KTP"
+                              className="w-16 h-16 object-cover rounded-md"
+                              loading="lazy"
+                            />
+                          </div>
+                        </td>
+
+                        <td className="px-6 py-5 xl:px-0">
+                          <span
+                            className={`text-base font-medium  ${
+                              seller.status === "approved"
+                                ? "text-green-500"
+                                : seller.status === "pending"
+                                ? "text-yellow-500"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {seller.status === "approved"
+                              ? "Diterima"
+                              : seller.status === "pending"
+                              ? "Ditinjau"
+                              : "Ditolak"}
                           </span>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.email}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.role === "admin"
-                              ? "Admin"
-                              : user.role === "seller"
-                              ? "Penjual"
-                              : "Pembeli"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.is_active ? (
-                              <span className="bg-green-500 text-white px-2 py-1 rounded-md">
-                                Terverifikasi
-                              </span>
-                            ) : (
-                              <span className="bg-gray-400 text-white px-2 py-1 rounded-md">
-                                Belum Verif
-                              </span>
+                            {new Date(seller.submitted_at).toLocaleDateString(
+                              "id-ID"
                             )}
                           </span>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          <ButtonDetail
-                            handle={() =>
-                              router.push(`/admin/users/detail/${user.id}`)
-                            }
-                          />
+                          {seller.status === "pending" ? (
+                            <div className="flex gap-2 justify-center">
+                              <ButtonApprove
+                                handle={() =>
+                                  handleAction(seller.id, "approve")
+                                }
+                              />
+                              <ButtonReject
+                                handle={() => handleAction(seller.id, "reject")}
+                              />
+                            </div>
+                          ) : (
+                            "-"
+                          )}
                         </td>
                       </tr>
                     ))
@@ -374,144 +466,5 @@ export default function UserPage() {
         </div>
       </section>
     </div>
-    // <div>
-    //   <h2 className="text-2xl font-bold mb-4">Daftar Pengguna</h2>
-    //   <div className="flex items-center justify-between my-4">
-    //     {/* Select untuk jumlah per halaman */}
-    //     <select
-    //       value={pageSize}
-    //       onChange={handlePageSizeChange}
-    //       className="px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-    //     >
-    //       <option value={10}>10</option>
-    //       <option value={25}>25</option>
-    //       <option value={50}>50</option>
-    //       <option value={100}>100</option>
-    //     </select>
-
-    //     {/* Input cari nama */}
-    //     <input
-    //       type="text"
-    //       placeholder="Cari nama..."
-    //       value={searchName}
-    //       onChange={handleSearchChange}
-    //       className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-    //     />
-    //   </div>
-
-    //   <div className="flex  mt-4 space-x-4 text-lg">
-    //     {tabs.map((tab) => (
-    //       <div
-    //         key={tab.id}
-    //         className={`pb-2 cursor-pointer transition-all border-b-2 ${
-    //           activeTab === tab.id
-    //             ? "text-black border-black font-semibold"
-    //             : "text-gray-500 border-transparent hover:text-black"
-    //         }`}
-    //         onClick={() => handleActiveTab(tab.id)}
-    //       >
-    //         {tab.title}
-    //       </div>
-    //     ))}
-    //   </div>
-    //   <div className="overflow-x-auto mt-2">
-    //     <table className="table-auto w-full border-collapse border border-gray-300">
-    //       <thead className="bg-gray-100">
-    //         <tr>
-    //           <th className="px-4 py-2">No</th>
-    //           <th className="px-4 py-2">Nama</th>
-    //           <th className="px-4 py-2">Email</th>
-    //           <th className="px-4 py-2">Role</th>
-    //           <th className="px-4 py-2">Status</th>
-    //           <th className="px-4 py-2">Aksi</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         {loading ? (
-    //           <tr>
-    //             <td
-    //               colSpan="6"
-    //               className="text-center text-gray-500 font-semibold py-4"
-    //             >
-    //               Memuat pengguna...
-    //             </td>
-    //           </tr>
-    //         ) : users.length > 0 ? (
-    //           users.map((user, index) => (
-    //             <tr key={user.id}>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {(pageActive - 1) * pageSize + index + 1}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">{user.name}</td>
-    //               <td className="border px-4 py-2 text-center">{user.email}</td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {user.role === "admin"
-    //                   ? "Admin"
-    //                   : user.role === "seller"
-    //                   ? "Penjual"
-    //                   : "Pembeli"}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {user.is_active ? (
-    //                   <span className="bg-green-500 text-white px-2 py-1 rounded-md">
-    //                     Terverifikasi
-    //                   </span>
-    //                 ) : (
-    //                   <span className="bg-gray-400 text-white px-2 py-1 rounded-md">
-    //                     Belum Verif
-    //                   </span>
-    //                 )}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 <button
-    //                   onClick={() =>
-    //                     router.push(`/admin/users/detail/${user.id}`)
-    //                   }
-    //                   className="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600"
-    //                 >
-    //                   Detail
-    //                 </button>
-    //               </td>
-    //             </tr>
-    //           ))
-    //         ) : (
-    //           <tr>
-    //             <td
-    //               colSpan="6"
-    //               className="text-center text-gray-500 font-semibold py-4"
-    //             >
-    //               Tidak ada pengguna ditemukan
-    //             </td>
-    //           </tr>
-    //         )}
-    //       </tbody>
-    //     </table>
-    //   </div>
-    //   {/* Pagination */}
-    //   <div className="flex justify-end mt-4">
-    //     {prevPage && (
-    //       <button
-    //         onClick={() => handlePagination(prevPage)}
-    //         className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-    //       >
-    //         Prev
-    //       </button>
-    //     )}
-    //     <button
-    //       key={pageActive}
-    //       className={`px-4 py-2 mx-1 rounded-md shadow bg-blue-600 text-white"`}
-    //     >
-    //       {pageActive}
-    //     </button>
-    //     {nextPage && (
-    //       <button
-    //         onClick={() => handlePagination(nextPage)}
-    //         className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-    //       >
-    //         Next
-    //       </button>
-    //     )}
-    //   </div>
-    // </div>
   );
 }

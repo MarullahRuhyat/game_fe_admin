@@ -19,6 +19,7 @@ import {
   GameGenreIcon,
   GameIcon,
   GameServiceIcon,
+  SensitiveGameIcon,
 } from "@/component/icon";
 
 export default function UserLayout({ children }) {
@@ -101,12 +102,12 @@ export default function UserLayout({ children }) {
       title: "Menu",
       items: [
         { label: "Dashboard", path: "/admin", icon: <DashboardIcon /> },
+        { label: "Pengguna", path: "/admin/users", icon: <UserIcon /> },
         {
           label: "Laporan Masalah",
           path: "/admin/report-problem",
           icon: <WarningIcon />,
         },
-        { label: "Pengguna", path: "/admin/users", icon: <UserIcon /> },
       ],
     },
     {
@@ -122,6 +123,11 @@ export default function UserLayout({ children }) {
           path: "/admin/request/seller",
           icon: <SellerIcon />,
         },
+        {
+          label: "Game Sensitif",
+          path: "/admin/request/sensitive-game",
+          icon: <GameIcon />,
+        },
       ],
     },
     {
@@ -134,7 +140,7 @@ export default function UserLayout({ children }) {
           icon: <GameServiceIcon />,
         },
         {
-          label: "Game Genre",
+          label: "Genre Game ",
           path: "/admin/master/genre-game",
           icon: <GameGenreIcon />,
         },

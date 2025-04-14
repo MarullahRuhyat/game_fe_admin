@@ -425,7 +425,7 @@ export default function WithdrawPage() {
                         style={{ margin: "3px" }}
                         type="button"
                         onClick={() => handlePagination(prevPage)}
-                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                       >
                         <span>Sebelumnya</span>
                       </button>
@@ -433,7 +433,7 @@ export default function WithdrawPage() {
                     <button
                       style={{ margin: "3px" }}
                       type="button"
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-500 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
                       <span>{pageActive}</span>
                     </button>
@@ -442,7 +442,7 @@ export default function WithdrawPage() {
                         style={{ margin: "3px" }}
                         type="button"
                         onClick={() => handlePagination(nextPage)}
-                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                       >
                         <span>Selanjutnya</span>
                       </button>

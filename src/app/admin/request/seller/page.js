@@ -38,7 +38,7 @@ export default function SellerPage() {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
-    let query = `?page=${pageActive}&page_size=${pageSize}`;
+    let query = `?type=seller&page=${pageActive}&page_size=${pageSize}`;
     if (searchName) {
       query += `&search=${encodeURIComponent(searchName)}`;
     }
@@ -207,6 +207,8 @@ export default function SellerPage() {
   };
 
   const listHeaderTable = ["No", "Nama", "KTP", "Status", "Tanggal", "Aksi"];
+
+  console.log("sellerApplications", sellerApplications);
 
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
@@ -428,7 +430,7 @@ export default function SellerPage() {
                         style={{ margin: "3px" }}
                         type="button"
                         onClick={() => handlePagination(prevPage)}
-                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                       >
                         <span>Sebelumnya</span>
                       </button>
@@ -436,7 +438,7 @@ export default function SellerPage() {
                     <button
                       style={{ margin: "3px" }}
                       type="button"
-                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-300 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
+                      className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out bg-purple-500 text-white  lg:px-6 lg:py-2.5 lg:text-sm`}
                     >
                       <span>{pageActive}</span>
                     </button>
@@ -445,7 +447,7 @@ export default function SellerPage() {
                         style={{ margin: "3px" }}
                         type="button"
                         onClick={() => handlePagination(nextPage)}
-                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-50  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
+                        className={`rounded-lg px-4 py-1.5 text-xs font-bold transition duration-300 ease-in-out  text-purple-300 bg-gray-200  hover:bg-purple-50 hover:text-purple-300 lg:px-6 lg:py-2.5 lg:text-sm`}
                       >
                         <span>Selanjutnya</span>
                       </button>

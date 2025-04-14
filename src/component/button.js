@@ -11,7 +11,7 @@ const ButtonAdd = ({ title, handle }) => {
   return (
     <button
       onClick={() => handle()}
-      className="flex items-center justify-center rounded-lg bg-purple-100  font-bold text-white 
+      className="flex items-center justify-center rounded-lg bg-purple-500  font-bold text-white  hover:bg-purple-600
   p-3 text
   "
       type="button"
@@ -58,7 +58,7 @@ const ButtonDetail = ({ handle }) => {
         e.stopPropagation();
         handle();
       }}
-      className="px-4 py-2 bg-green-600 text-white rounded-md shadow "
+      className="px-4 py-2 bg-blue-600 text-white rounded-md shadow "
     >
       <FontAwesomeIcon icon={faInfo} className="mr-2" />
       Detail
