@@ -19,6 +19,8 @@ const api_url = {
   review: `${BASE_URL}/api/review/`,
   withdraw: `${BASE_URL}/api/withdraw/`,
   sellerApplication: `${BASE_URL}/api/seller-application/`,
+  reportProblem: `${BASE_URL}/api/report-problem/`,
+  sellerLevel: `${BASE_URL}/api/seller-level/`,
 };
 
 export default api_url;

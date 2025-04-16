@@ -261,6 +261,38 @@ const GameGenreIcon = function () {
     </svg>
   );
 };
+
+const TrophyIcon = function () {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7 4H17V7C17 9.20914 15.2091 11 13 11H11C8.79086 11 7 9.20914 7 7V4Z"
+        fill="#1A202C"
+        className="path-1"
+      />
+      <path d="M10 11V13H14V11" fill="#1A202C" className="path-1" />
+      <path d="M10 13H14L13 17H11L10 13Z" fill="#1A202C" className="path-1" />
+      <path
+        d="M17 4H19C19 6.20914 17.6569 7 16 7"
+        fill="#1A202C"
+        className="path-1"
+      />
+      <path
+        d="M7 4H5C5 6.20914 6.34315 7 8 7"
+        fill="#1A202C"
+        className="path-1"
+      />
+      <circle cx="12" cy="5" r="1.5" fill="#6A0DAD" className="path-2" />
+    </svg>
+  );
+};
+
 export {
   DashboardIcon,
   WarningIcon,
@@ -271,4 +303,5 @@ export {
   GameServiceIcon,
   GameGenreIcon,
   SensitiveGameIcon,
+  TrophyIcon,
 };

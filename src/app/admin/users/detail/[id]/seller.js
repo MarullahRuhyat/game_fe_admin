@@ -197,9 +197,9 @@ export default function Seller({ user }) {
                 <div className="flex items-end justify-between">
                   <div className="flex-1">
                     <p className="text-3xl font-bold leading-[48px] text-bgray-900 dark:text-white">
-                      {user.seller_level}
+                      {user.seller.seller_level.name}
                       <span
-                        className={`ml-2 text-[${user.seller.color_level}]`}
+                        className={`ml-2 text-[${user.seller.seller_level.color}]`}
                       >
                         <FontAwesomeIcon icon={faTrophy} />
                       </span>

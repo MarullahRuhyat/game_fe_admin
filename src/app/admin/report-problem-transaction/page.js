@@ -8,12 +8,12 @@ import { ButtonDetail } from "@/component/button";
 
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
-export default function UserPage() {
+export default function ReportProblemPage() {
   const router = useRouter();
 
-  const [users, setUsers] = useState([]);
-  const [userCount, setUserCount] = useState(0);
+  const [reportProblems, setReportProblems] = useState([]);
   const [pageSize, setPageSize] = useState(10); // NEW
   const [searchName, setSearchName] = useState(""); // NEW
   const [loading, setLoading] = useState(true);
@@ -21,42 +21,55 @@ export default function UserPage() {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const [reportProblemDetail, setReportProblemDetail] = useState(null);
 
-  const [tabs, setTabs] = useState([
-    { id: "all", title: "Semua", count: 0 },
-    { id: "seller", title: "Penjual", count: 0 },
-  ]);
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
-
-  const fetchUsers = async (url = null) => {
-    setLoading(true);
-    let query_params = `?page=${pageActive}&page_size=${pageSize}`;
-    if (activeTab === "seller") {
-      query_params += "&seller=true";
+  const fetchReportProblems = async (url = null) => {
+    const token = Cookies.get("token");
+    if (!token) {
+      Swal.fire({
+        icon: "error",
+        confirmButtonColor: "#dc3545",
+        title: "Error",
+        text: "Sesi anda telah abis, silahkan login kembali",
+      });
+      router.push("/auth/login");
+      return;
     }
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+    setLoading(true);
+    let query_params = `?transaction=true&page=${pageActive}&page_size=${pageSize}`;
     if (searchName) {
       query_params += `&name=${encodeURIComponent(searchName)}`;
     }
     if (url == null) {
-      url = `${api_url.user}${query_params}`;
+      url = `${api_url.reportProblem}${query_params}`;
     }
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        method: "GET",
+        headers: headers,
+      });
+
       if (res.status === 401 || res.status === 403) {
         Swal.fire({
           icon: "error",
           confirmButtonColor: "#dc3545",
           title: "Error",
-          text: "Sesi anda telah habis, silahkan login kembali",
+          text: "Sesi anda telah abis, silahkan login kembali",
         });
         Cookies.remove("token");
         router.push("/auth/login");
-        return;
       }
+
       if (!res.ok) {
         throw new Error("Network response was not ok");
       }
+
       const data = await res.json();
       setNextPage(data.next);
       setPrevPage(data.previous);
@@ -89,18 +102,7 @@ export default function UserPage() {
         setPageActive(parseInt(page) - 1);
       }
 
-      setUsers(data.results);
-      setUserCount(data.count);
-      setTabs((prevTabs) =>
-        prevTabs.map((tab) => {
-          if (tab.id === "all") {
-            return { ...tab, count: data.user };
-          } else if (tab.id === "seller") {
-            return { ...tab, count: data.seller };
-          }
-          return tab;
-        })
-      );
+      setReportProblems(data.results);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -114,8 +116,8 @@ export default function UserPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [pageSize, activeTab, searchName]);
+    fetchReportProblems();
+  }, [pageSize, searchName]);
 
   const handleSearchChange = (e) => {
     setSearchName(e.target.value);
@@ -130,18 +132,22 @@ export default function UserPage() {
     }
   };
 
-  const handleActiveTab = (tabId) => {
-    setActiveTab(tabId);
-    setPageActive(1);
-  };
-
   const handlePagination = (url) => {
     setLoading(true);
-    fetchUsers(url);
+    fetchReportProblems(url);
   };
 
-  const listHeaderTable = ["No", "Nama", "email", "role", "Status", "Aksi"];
+  const listHeaderTable = ["No", "Nama", "email", "title", "Aksi"];
 
+  const handleShowDetail = (report) => {
+    setReportProblemDetail(report);
+    setShowDetail(true);
+  };
+  const handleCloseDetail = () => {
+    setShowDetail(false);
+  };
+
+  console.log(reportProblemDetail);
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
       <section className="mb-6 2xl:mb-0 2xl:flex-1">
@@ -151,22 +157,7 @@ export default function UserPage() {
               <div className="w-full">
                 <div className="relative space-y-5 md:space-y-0 h-[56px] w-full flex flex-col md:flex-row  md:items-center md:justify-between">
                   {/* button tambah */}
-                  <div className="flex text-lg ">
-                    {tabs.map((tab) => (
-                      <div
-                        style={{ margin: "10px" }}
-                        key={tab.id}
-                        className={`pb-2 cursor-pointer transition-all border-b-2 text-bgray-900 dark:text-bgray-50 ${
-                          activeTab === tab.id
-                            ? " border-purple-300 font-semibold"
-                            : "border-transparent "
-                        }`}
-                        onClick={() => handleActiveTab(tab.id)}
-                      >
-                        {tab.title}
-                      </div>
-                    ))}
-                  </div>
+                  <div className="flex text-lg "></div>
                   <Input
                     type="text"
                     placeholder="Cari berdasarkan nama"
@@ -203,55 +194,46 @@ export default function UserPage() {
                         Memuat service...
                       </td>
                     </tr>
-                  ) : users.length > 0 ? (
-                    users.map((user, index) => (
+                  ) : reportProblems.length > 0 ? (
+                    reportProblems.map((report, index) => (
                       <tr
-                        key={user.id}
+                        key={report.id}
                         className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
                       >
                         <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {(pageActive - 1) * pageSize + index + 1}
-                          </span>
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                              {index + 1 + (pageActive - 1) * pageSize}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.name}
-                          </span>
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                              {report.user.first_name}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.email}
-                          </span>
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                              {report.user.email}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.role === "admin"
-                              ? "Admin"
-                              : user.role === "seller"
-                              ? "Penjual"
-                              : "Pembeli"}
-                          </span>
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                              {report.title}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {user.is_active ? (
-                              <span className="bg-green-500 text-white px-2 py-1 rounded-md">
-                                Terverifikasi
-                              </span>
-                            ) : (
-                              <span className="bg-gray-400 text-white px-2 py-1 rounded-md">
-                                Belum Verif
-                              </span>
-                            )}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <ButtonDetail
-                            handle={() =>
-                              router.push(`/admin/users/detail/${user.id}`)
-                            }
-                          />
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <ButtonDetail
+                              handle={() => handleShowDetail(report)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -388,145 +370,77 @@ export default function UserPage() {
           </div>
         </div>
       </section>
+      {/* modal show detail */}
+      <div
+        className={`${
+          showDetail ? "flex" : "hidden"
+        } fixed inset-0 z-50 items-center justify-center `}
+      >
+        <div className="bg-white dark:bg-darkblack-600 rounded-2xl shadow-2xl p-6 w-full max-w-2xl">
+          <div className="flex justify-between items-center border-b pb-4 mb-4">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+              Detail Laporan Masalah
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 text-gray-700 dark:text-white">
+            <div>
+              <strong>Nama:</strong> {reportProblemDetail?.user.first_name}
+            </div>
+            <div>
+              <strong>Email:</strong> {reportProblemDetail?.user.email}
+            </div>
+            <div>
+              <strong>Judul:</strong> {reportProblemDetail?.title}
+            </div>
+            <div>
+              <strong>Deskripsi:</strong>
+              <p className="mt-1">{reportProblemDetail?.description}</p>
+            </div>
+            <div>
+              <strong>Order Id:</strong>
+              <p className="mt-1">
+                {reportProblemDetail?.transaction.order_id}
+              </p>
+            </div>
+            <div>
+              <strong>Penjual:</strong>
+              <p className="mt-1">{reportProblemDetail?.transaction.seller}</p>
+            </div>
+            <div>
+              <strong>Pembeli:</strong>
+              <p className="mt-1">{reportProblemDetail?.transaction.buyer}</p>
+            </div>
+            <div>
+              <strong>Gambar:</strong>
+              <a href={`${reportProblemDetail?.file}`} target="_blank">
+                {reportProblemDetail?.file ? (
+                  <Image
+                    src={`${reportProblemDetail.file}`}
+                    alt="Gambar"
+                    width={500}
+                    height={500}
+                    className="mt-2 rounded-lg"
+                  />
+                ) : (
+                  <p className="mt-1 text-sm italic text-gray-400">
+                    Tidak ada gambar
+                  </p>
+                )}
+              </a>
+            </div>
+          </div>
+          <div className="flex justify-end mt-6">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition font-medium"
+              onClick={handleCloseDetail}
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* end modal show detail */}
     </div>
-    // <div>
-    //   <h2 className="text-2xl font-bold mb-4">Daftar Pengguna</h2>
-    //   <div className="flex items-center justify-between my-4">
-    //     {/* Select untuk jumlah per halaman */}
-    //     <select
-    //       value={pageSize}
-    //       onChange={handlePageSizeChange}
-    //       className="px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none"
-    //     >
-    //       <option value={10}>10</option>
-    //       <option value={25}>25</option>
-    //       <option value={50}>50</option>
-    //       <option value={100}>100</option>
-    //     </select>
-
-    //     {/* Input cari nama */}
-    //     <input
-    //       type="text"
-    //       placeholder="Cari nama..."
-    //       value={searchName}
-    //       onChange={handleSearchChange}
-    //       className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-    //     />
-    //   </div>
-
-    //   <div className="flex  mt-4 space-x-4 text-lg">
-    //     {tabs.map((tab) => (
-    //       <div
-    //         key={tab.id}
-    //         className={`pb-2 cursor-pointer transition-all border-b-2 ${
-    //           activeTab === tab.id
-    //             ? "text-black border-black font-semibold"
-    //             : "text-gray-500 border-transparent hover:text-black"
-    //         }`}
-    //         onClick={() => handleActiveTab(tab.id)}
-    //       >
-    //         {tab.title}
-    //       </div>
-    //     ))}
-    //   </div>
-    //   <div className="overflow-x-auto mt-2">
-    //     <table className="table-auto w-full border-collapse border border-gray-300">
-    //       <thead className="bg-gray-100">
-    //         <tr>
-    //           <th className="px-4 py-2">No</th>
-    //           <th className="px-4 py-2">Nama</th>
-    //           <th className="px-4 py-2">Email</th>
-    //           <th className="px-4 py-2">Role</th>
-    //           <th className="px-4 py-2">Status</th>
-    //           <th className="px-4 py-2">Aksi</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         {loading ? (
-    //           <tr>
-    //             <td
-    //               colSpan="6"
-    //               className="text-center text-gray-500 font-semibold py-4"
-    //             >
-    //               Memuat pengguna...
-    //             </td>
-    //           </tr>
-    //         ) : users.length > 0 ? (
-    //           users.map((user, index) => (
-    //             <tr key={user.id}>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {(pageActive - 1) * pageSize + index + 1}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">{user.name}</td>
-    //               <td className="border px-4 py-2 text-center">{user.email}</td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {user.role === "admin"
-    //                   ? "Admin"
-    //                   : user.role === "seller"
-    //                   ? "Penjual"
-    //                   : "Pembeli"}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 {user.is_active ? (
-    //                   <span className="bg-green-500 text-white px-2 py-1 rounded-md">
-    //                     Terverifikasi
-    //                   </span>
-    //                 ) : (
-    //                   <span className="bg-gray-400 text-white px-2 py-1 rounded-md">
-    //                     Belum Verif
-    //                   </span>
-    //                 )}
-    //               </td>
-    //               <td className="border px-4 py-2 text-center">
-    //                 <button
-    //                   onClick={() =>
-    //                     router.push(`/admin/users/detail/${user.id}`)
-    //                   }
-    //                   className="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600"
-    //                 >
-    //                   Detail
-    //                 </button>
-    //               </td>
-    //             </tr>
-    //           ))
-    //         ) : (
-    //           <tr>
-    //             <td
-    //               colSpan="6"
-    //               className="text-center text-gray-500 font-semibold py-4"
-    //             >
-    //               Tidak ada pengguna ditemukan
-    //             </td>
-    //           </tr>
-    //         )}
-    //       </tbody>
-    //     </table>
-    //   </div>
-    //   {/* Pagination */}
-    //   <div className="flex justify-end mt-4">
-    //     {prevPage && (
-    //       <button
-    //         onClick={() => handlePagination(prevPage)}
-    //         className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-    //       >
-    //         Prev
-    //       </button>
-    //     )}
-    //     <button
-    //       key={pageActive}
-    //       className={`px-4 py-2 mx-1 rounded-md shadow bg-blue-600 text-white"`}
-    //     >
-    //       {pageActive}
-    //     </button>
-    //     {nextPage && (
-    //       <button
-    //         onClick={() => handlePagination(nextPage)}
-    //         className="px-4 py-2 mx-1 rounded-md shadow bg-gray-300 text-gray-700 hover:bg-gray-400"
-    //       >
-    //         Next
-    //       </button>
-    //     )}
-    //   </div>
-    // </div>
   );
 }

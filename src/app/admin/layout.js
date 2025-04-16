@@ -20,6 +20,7 @@ import {
   GameIcon,
   GameServiceIcon,
   SensitiveGameIcon,
+  TrophyIcon,
 } from "@/component/icon";
 
 export default function UserLayout({ children }) {
@@ -108,6 +109,11 @@ export default function UserLayout({ children }) {
           path: "/admin/report-problem",
           icon: <WarningIcon />,
         },
+        {
+          label: "Laporan Masalah Transaksi",
+          path: "/admin/report-problem-transaction",
+          icon: <WarningIcon />,
+        },
       ],
     },
     {
@@ -143,6 +149,11 @@ export default function UserLayout({ children }) {
           label: "Genre Game ",
           path: "/admin/master/genre-game",
           icon: <GameGenreIcon />,
+        },
+        {
+          label: "Level Penjual ",
+          path: "/admin/master/seller-level",
+          icon: <TrophyIcon />,
         },
       ],
     },

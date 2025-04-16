@@ -572,7 +572,7 @@ export default function UserPage() {
                   className={`px-3 py-1 rounded-full text-white text-sm ${
                     activeGameTab === tab.key
                       ? "bg-purple-500 "
-                      : "bg-gray-200 "
+                      : "bg-gray-700 "
                   }`}
                 >
                   {tab.label}
@@ -597,7 +597,7 @@ export default function UserPage() {
                   className={`px-3 py-1 rounded-full text-white text-sm ${
                     activeSellerTab === tab.key
                       ? "bg-purple-500 "
-                      : "bg-gray-200 "
+                      : "bg-gray-700 "
                   }`}
                 >
                   {tab.label}
