@@ -182,9 +182,7 @@ export default function LoginPage() {
                 </li>
               </ul>
               <div>
-                <Image
-                  width={600}
-                  height={600}
+                <img
                   src="/template/assets/images/illustration/signin.svg"
                   alt=""
                 />
