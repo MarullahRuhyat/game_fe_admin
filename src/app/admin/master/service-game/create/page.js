@@ -13,14 +13,18 @@ export default function CreateServicePage() {
   const [serviceData, setServiceData] = useState({
     name_eng: "",
     name_ind: "",
+    image: "",
+    icon: "",
   });
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewIcon, setPreviewIcon] = useState("");
 
   const dispatch = useDispatch();
   const router = useRouter();
 
   const handleInputChangeEng = (e) => {
     const { name, value } = e.target;
-    console.log("value", value);
+    console.log("Typed:", value);
     serviceData[name] = value;
     setServiceData({
       ...serviceData,
@@ -30,6 +34,7 @@ export default function CreateServicePage() {
 
   const handleInputChangeInd = (e) => {
     const { name, value } = e.target;
+    console.log("Typed:", value);
     serviceData[name] = value;
     setServiceData({
       ...serviceData,
@@ -37,27 +42,43 @@ export default function CreateServicePage() {
     });
   };
 
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (name === "image") {
+      setPreviewImage(URL.createObjectURL(files[0]));
+    }
+    if (name === "icon") {
+      setPreviewIcon(URL.createObjectURL(files[0]));
+    }
+
+    setServiceData({
+      ...serviceData,
+      [name]: files[0], // ambil file pertama
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = Cookies.get("token");
 
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${token}`);
-    myHeaders.append("Content-Type", "application/json");
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(serviceData),
-      redirect: "follow",
-    };
+    const formData = new FormData();
+    formData.append("name_eng", serviceData.name_eng);
+    formData.append("name_ind", serviceData.name_ind);
+    formData.append("image", serviceData.image);
+    formData.append("icon", serviceData.icon);
 
     try {
-      const response = await fetch(api_url.serviceGame, requestOptions);
+      const response = await fetch(api_url.serviceGame, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Jangan tambahkan Content-Type, browser akan otomatis set multipart/form-data dengan boundary
+        },
+        body: formData,
+      });
+
       const data = await response.json();
 
       if (response.ok) {
@@ -72,7 +93,7 @@ export default function CreateServicePage() {
           router.push("/admin/master/service-game");
         });
       } else {
-        if (response.status === 403 || response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           Swal.fire({
             title: "Error",
             text: "Sesi telah berakhir. Silakan masuk kembali.",
@@ -142,6 +163,48 @@ export default function CreateServicePage() {
                       placeholder={"name_ind"}
                       name="name_ind"
                       required={true}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Image
+                    </label>
+                    {previewImage && (
+                      <img
+                        src={previewImage}
+                        alt="Preview Icon"
+                        className="h-16 w-16 rounded border object-contain"
+                      />
+                    )}
+                    <Input
+                      type={"file"}
+                      handle={handleFileChange}
+                      value={serviceData.image}
+                      placeholder={"image"}
+                      name="image"
+                      required={true}
+                      accept={"image/*"}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Icon
+                    </label>
+                    {previewIcon && (
+                      <img
+                        src={previewIcon}
+                        alt="Preview Icon"
+                        className="h-16 w-16 rounded border object-contain"
+                      />
+                    )}
+                    <Input
+                      type={"file"}
+                      handle={handleFileChange}
+                      value={serviceData.icon}
+                      placeholder={"icon"}
+                      name="icon"
+                      required={true}
+                      accept={"image/*"}
                     />
                   </div>
                 </div>

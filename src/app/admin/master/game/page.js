@@ -19,7 +19,7 @@ export default function GamePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("");
-  const itemsPerPage = 1;
+  const itemsPerPage = 10;
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -270,7 +270,7 @@ export default function GamePage() {
                             <Image
                               width={100}
                               height={100}
-                              src={api_url.base_url + game.image}
+                              src={game.image}
                               alt={game.name}
                               className="w-16 h-16 object-cover rounded-lg"
                             />

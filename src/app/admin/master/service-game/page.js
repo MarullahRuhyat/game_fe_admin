@@ -143,7 +143,15 @@ export default function ServicePage() {
   const handleEditService = (id) => {
     router.push(`/admin/master/service-game/${id}`);
   };
-  const listHeaderTable = ["No", "Nama Inggris", "Nama Indonesia", "Aksi"];
+  const listHeaderTable = [
+    "No",
+    "Nama Inggris",
+    "Nama Indonesia",
+    "Image",
+    "Icon",
+    "Aksi",
+  ];
+  console.log(serviceGame);
 
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
@@ -210,6 +218,24 @@ export default function ServicePage() {
                           <span className="text-base font-medium text-bgray-900 dark:text-white">
                             {service.name_ind}
                           </span>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <div className="flex justify-center items-center space-x-2">
+                            <img
+                              src={service.image}
+                              alt="image"
+                              className="h-[80px] w-[80px] "
+                            />
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <div className="flex justify-center items-center space-x-2">
+                            <img
+                              src={service.icon}
+                              alt="icon"
+                              className="h-[40px] w-[40px] "
+                            />
+                          </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center items-center space-x-2">

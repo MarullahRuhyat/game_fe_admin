@@ -15,6 +15,7 @@ export default function EditGamePage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const router = useRouter();
+  const [previewImage, setPreviewImage] = useState("");
 
   const { genreGame, isFetchGenreGame } = useSelector(
     (state) => state.genreGame
@@ -49,6 +50,7 @@ export default function EditGamePage() {
             popular: data.popular ? 1 : 0,
             image: null, // Tidak menampilkan gambar lama
           });
+          setPreviewImage(data.image);
         } else {
           Swal.fire("Error", "Gagal mengambil data game.", "error");
           router.push("/admin/master/game");
@@ -140,6 +142,7 @@ export default function EditGamePage() {
   const handleInputFile = (e) => {
     const file = e.target.files[0];
     console.log("file", file);
+    setPreviewImage(URL.createObjectURL(file));
 
     if (file) {
       const reader = new FileReader();
@@ -170,6 +173,9 @@ export default function EditGamePage() {
   const handleBack = () => {
     router.push("/admin/master/game");
   };
+
+  console.log("formData", formData);
+  console.log("serviceGame", serviceGame);
 
   return (
     <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
@@ -215,6 +221,13 @@ export default function EditGamePage() {
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Image
                     </label>
+                    {previewImage && (
+                      <img
+                        src={previewImage}
+                        alt="Preview Icon"
+                        className="h-16 w-16 rounded border object-contain"
+                      />
+                    )}
                     <Input
                       type="file"
                       name="image"
@@ -236,7 +249,9 @@ export default function EditGamePage() {
                           <input
                             type="checkbox"
                             value={service.id}
-                            checked={formData.game_services.includes(service)}
+                            checked={formData.game_services.some(
+                              (s) => s.id === service.id
+                            )}
                             onChange={handleCheckboxChange}
                             className="mr-2"
                           />
@@ -254,7 +269,7 @@ export default function EditGamePage() {
                         <input
                           type="checkbox"
                           value="1"
-                          checked={formData.sensitif_game === "1"}
+                          checked={formData.sensitif_game === 1}
                           onChange={handleSensitifChange}
                           className="mr-2"
                         />
@@ -271,7 +286,7 @@ export default function EditGamePage() {
                         <input
                           type="checkbox"
                           value="1"
-                          checked={formData.popular === "1"}
+                          checked={formData.popular === 1}
                           onChange={handlePopularChange}
                           className="mr-2"
                         />

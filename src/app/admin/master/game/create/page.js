@@ -20,6 +20,7 @@ export default function CreateGamePage() {
     popular: 0,
     image: "",
   });
+  const [previewImage, setPreviewImage] = useState("");
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -170,7 +171,7 @@ export default function CreateGamePage() {
 
   const handleInputFile = (e) => {
     const file = e.target.files[0];
-    console.log("file", file);
+    setPreviewImage(URL.createObjectURL(file));
     setFormData((prev) => ({
       ...prev,
       image: file,
@@ -211,8 +212,8 @@ export default function CreateGamePage() {
                       name="genre"
                       value={formData.genre}
                       handle={handleChange}
-                      required
                       placeholder="Pilih genre"
+                      required={true}
                       options={genreGame.map((genre) => ({
                         value: genre.id,
                         label: genre.name,
@@ -223,11 +224,21 @@ export default function CreateGamePage() {
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Image
                     </label>
-                    <input
-                      type="file"
-                      name="image"
+                    {previewImage && (
+                      <img
+                        src={previewImage}
+                        alt="Preview Icon"
+                        className="h-24 w-24 rounded border object-contain"
+                      />
+                    )}
+                    <Input
+                      type={"file"}
+                      required={true}
+                      accept={"image/*"}
                       handle={handleInputFile}
-                      className="rounded-lg border-0 bg-bgray-50 p-4 focus:border focus:border-purple-300 focus:ring-0 dark:bg-darkblack-500 dark:text-white text-black"
+                      placeholder={"image"}
+                      name="image"
+                      value={formData.image}
                     />
                   </div>
                   <div className="flex flex-col gap-2">
