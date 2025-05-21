@@ -199,14 +199,38 @@ export default function SellerPage() {
         throw new Error("Gagal memproses aksi");
       }
 
-      Swal.fire("Berhasil", `Penarikan berhasil di-${action}`, "success");
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil",
+        text: `Berhasil ${
+          action === "approve" ? "menyetujui" : "menolak"
+        } aplikasi`,
+        confirmButtonColor: "#3085d6",
+        timer: 2000,
+      });
       fetchSellerApplications(); // Refresh data
     } catch (err) {
-      Swal.fire("Gagal", "Terjadi kesalahan saat memproses", "error");
+      Swal.fire({
+        icon: "error",
+        title: "Gagal",
+        text: `Gagal ${
+          action === "approve" ? "menyetujui" : "menolak"
+        } aplikasi`,
+        confirmButtonColor: "#dc3545",
+      });
     }
   };
 
-  const listHeaderTable = ["No", "Nama", "KTP", "Status", "Tanggal", "Aksi"];
+  const listHeaderTable = [
+    "No",
+    "Nama",
+    "KTP",
+    "Tanggal Lahir",
+    "No Handphone",
+    "Alamat",
+    "Status",
+    "Aksi",
+  ];
 
   console.log("sellerApplications", sellerApplications);
 
@@ -273,15 +297,38 @@ export default function SellerPage() {
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center items-center">
-                            <Image
-                              width={100}
-                              height={100}
-                              src={`${seller.id_card}`}
-                              alt="KTP"
-                              className="w-16 h-16 object-cover rounded-md"
-                              loading="lazy"
-                            />
+                            <a
+                              href={seller.id_card}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Image
+                                width={100}
+                                height={100}
+                                src={`${seller.id_card}`}
+                                alt="KTP"
+                                className="w-16 h-16 object-cover rounded-md"
+                                loading="lazy"
+                              />
+                            </a>
                           </div>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {seller.date_of_birth}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {seller.phone_number}
+                          </span>
+                        </td>
+
+                        <td className="px-6 py-5 xl:px-0">
+                          <span className="text-base font-medium text-bgray-900 dark:text-white">
+                            {seller.address}
+                          </span>
                         </td>
 
                         <td className="px-6 py-5 xl:px-0">
@@ -299,13 +346,6 @@ export default function SellerPage() {
                               : seller.status === "pending"
                               ? "Ditinjau"
                               : "Ditolak"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <span className="text-base font-medium text-bgray-900 dark:text-white">
-                            {new Date(seller.submitted_at).toLocaleDateString(
-                              "id-ID"
-                            )}
                           </span>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
