@@ -192,7 +192,7 @@ export default function WithdrawPage() {
 
     // Gunakan FormData untuk mengirim file + field lainnya
     const formData = new FormData();
-    formData.append("status", action === "approve" ? "approved" : "failed");
+    formData.append("status", action === "approve" ? "approved" : "rejected");
     if (reason) formData.append("reason", reason);
     if (file) formData.append("image", file);
 
