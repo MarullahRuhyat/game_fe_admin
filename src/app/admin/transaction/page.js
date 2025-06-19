@@ -10,21 +10,22 @@ import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import Image from "next/image";
 
-export default function ReportProblemPage() {
+export default function TransactionPage() {
   const router = useRouter();
 
-  const [reportProblems, setReportProblems] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [pageSize, setPageSize] = useState(10); // NEW
-  const [email, setEmail] = useState(""); // NEW
+  const [orderId, setSearchOrderId] = useState(""); // NEW
   const [loading, setLoading] = useState(true);
   const [pageActive, setPageActive] = useState(1);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [reportProblemDetail, setReportProblemDetail] = useState(null);
+  const [transactionProblemDetail, settransactionProblemDetail] =
+    useState(null);
 
-  const fetchReportProblems = async (url = null) => {
+  const fetchTransaction = async (url = null) => {
     const token = Cookies.get("token");
     if (!token) {
       Swal.fire({
@@ -41,12 +42,12 @@ export default function ReportProblemPage() {
       "Content-Type": "application/json",
     };
     setLoading(true);
-    let query_params = `?transaction=true&page=${pageActive}&page_size=${pageSize}`;
-    if (email) {
-      query_params += `&email=${encodeURIComponent(email)}`;
+    let query_params = `?&page=${pageActive}&page_size=${pageSize}`;
+    if (orderId) {
+      query_params += `&order_id=${encodeURIComponent(orderId)}`;
     }
     if (url == null) {
-      url = `${api_url.reportProblem}${query_params}`;
+      url = `${api_url.transaction}${query_params}`;
     }
 
     try {
@@ -102,7 +103,7 @@ export default function ReportProblemPage() {
         setPageActive(parseInt(page) - 1);
       }
 
-      setReportProblems(data.results);
+      setTransactions(data.results);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -116,11 +117,11 @@ export default function ReportProblemPage() {
   };
 
   useEffect(() => {
-    fetchReportProblems();
-  }, [pageSize, email]);
+    fetchTransaction();
+  }, [pageSize, orderId]);
 
   const handleSearchChange = (e) => {
-    setEmail(e.target.value);
+    setSearchOrderId(e.target.value);
     setPageActive(1);
   };
 
@@ -134,13 +135,20 @@ export default function ReportProblemPage() {
 
   const handlePagination = (url) => {
     setLoading(true);
-    fetchReportProblems(url);
+    fetchTransaction(url);
   };
 
-  const listHeaderTable = ["Order id", "Nama", "email", "title", "Aksi"];
+  const listHeaderTable = [
+    "Order Id",
+    "Nama Produk",
+    "Penjual",
+    "Pembeli",
+    "Status",
+    "Aksi",
+  ];
 
-  const handleShowDetail = (report) => {
-    setReportProblemDetail(report);
+  const handleShowDetail = (transaction) => {
+    settransactionProblemDetail(transaction);
     setShowDetail(true);
   };
   const handleCloseDetail = () => {
@@ -159,8 +167,8 @@ export default function ReportProblemPage() {
                   <div className="flex text-lg "></div>
                   <Input
                     type="text"
-                    placeholder="Cari berdasarkan email"
-                    value={email}
+                    placeholder="Cari berdasarkan order id"
+                    value={orderId}
                     handle={handleSearchChange}
                     name="search"
                   />
@@ -193,44 +201,79 @@ export default function ReportProblemPage() {
                         Memuat service...
                       </td>
                     </tr>
-                  ) : reportProblems.length > 0 ? (
-                    reportProblems.map((report, index) => (
+                  ) : transactions.length > 0 ? (
+                    transactions.map((transaction, index) => (
                       <tr
-                        key={report.id}
+                        key={transaction.id}
                         className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
                       >
-                        <td className="px-6 py-5 xl:px-0">
+                        <td className="px-6 py-5 xl:px-0 ">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.transaction.order_id}
+                              {transaction.order_id}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 xl:px-0 w-[200px]">
+                          <div className="flex justify-center w-full items-center space-x-2.5">
+                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                              {transaction.product_name}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.user.first_name}
+                              {transaction.product.store}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.user.email}
+                              {transaction.user.name}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center w-full items-center space-x-2.5">
-                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.title}
-                            </span>
+                            {transaction.status.id === -1 && (
+                              <button className="bg-red-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
+                            {transaction.status.id === 1 && (
+                              <button className="bg-yellow-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
+                            {transaction.status.id === 10 && (
+                              <button className="bg-blue-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
+                            {transaction.status.id === 20 && (
+                              <button className="bg-blue-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
+                            {transaction.status.id === 25 && (
+                              <button className="bg-red-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
+                            {transaction.status.id === 30 && (
+                              <button className="bg-green-600 px-4 py-1 text-sm text-white rounded">
+                                {transaction.status.message.ind}
+                              </button>
+                            )}
                           </div>
                         </td>
+
                         <td className="px-6 py-5 xl:px-0">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <ButtonDetail
-                              handle={() => handleShowDetail(report)}
+                              handle={() => handleShowDetail(transaction)}
                             />
                           </div>
                         </td>
@@ -378,60 +421,106 @@ export default function ReportProblemPage() {
         <div className="bg-white dark:bg-darkblack-600 rounded-2xl shadow-2xl p-6 w-full max-w-2xl">
           <div className="flex justify-between items-center border-b pb-4 mb-4">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-              Detail Laporan Masalah
+              Detail Transaksi
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-4 text-gray-700 dark:text-white">
             <div>
-              <strong>Nama:</strong> {reportProblemDetail?.user.first_name}
+              <strong>Order ID:</strong> {transactionProblemDetail?.order_id}
             </div>
             <div>
-              <strong>Email:</strong> {reportProblemDetail?.user.email}
+              <strong>Nama Produk:</strong>{" "}
+              {transactionProblemDetail?.product_name}
             </div>
             <div>
-              <strong>Judul:</strong> {reportProblemDetail?.title}
+              <strong>Penjual:</strong>{" "}
+              {transactionProblemDetail?.product.store} /{" "}
+              {transactionProblemDetail?.product.email}
             </div>
             <div>
-              <strong>Deskripsi:</strong>
-              <p className="mt-1">{reportProblemDetail?.description}</p>
+              <strong>Pembeli:</strong> {transactionProblemDetail?.user.name} /{" "}
+              {transactionProblemDetail?.user.email}
             </div>
             <div>
-              <strong>Order Id:</strong>
-              <p className="mt-1">
-                {reportProblemDetail?.transaction.order_id}
-              </p>
+              <strong>Harga:</strong>{" "}
+              {transactionProblemDetail?.product.price.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              })}
             </div>
             <div>
-              <strong>Penjual:</strong>
-              <p className="mt-1">{reportProblemDetail?.transaction.seller}</p>
+              <strong>Status:</strong>{" "}
+              {transactionProblemDetail?.status.id === -1 && (
+                <>
+                  <button className="bg-red-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
+              {transactionProblemDetail?.status.id === 1 && (
+                <>
+                  <button className="bg-yellow-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
+              {transactionProblemDetail?.status.id === 10 && (
+                <>
+                  <button className="bg-blue-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
+              {transactionProblemDetail?.status.id === 20 && (
+                <>
+                  <button className="bg-blue-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
+              {transactionProblemDetail?.status.id === 25 && (
+                <>
+                  <button className="bg-red-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
+              {transactionProblemDetail?.status.id === 30 && (
+                <>
+                  <button className="bg-green-600 px-4 py-1  text-sm">
+                    {transactionProblemDetail?.status.message.ind}
+                  </button>
+                </>
+              )}
             </div>
             <div>
-              <strong>Pembeli:</strong>
-              <p className="mt-1">{reportProblemDetail?.transaction.buyer}</p>
+              <strong>Waktu Transaksi:</strong>{" "}
+              {new Date(transactionProblemDetail?.created_at).toLocaleString(
+                "id-ID",
+                {
+                  dateStyle: "full",
+                  timeStyle: "short",
+                }
+              )}
             </div>
-            <div>
-              <strong>Gambar:</strong>
-              <a href={`${reportProblemDetail?.file}`} target="_blank">
-                {reportProblemDetail?.file ? (
-                  <Image
-                    src={`${reportProblemDetail.file}`}
-                    alt="Gambar"
-                    width={500}
-                    height={500}
-                    className="mt-2 rounded-lg"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm italic text-gray-400">
-                    Tidak ada gambar
-                  </p>
-                )}
-              </a>
+            <div className="flex justify-center">
+              {transactionProblemDetail?.product.image ? (
+                <Image
+                  src={transactionProblemDetail.product.image}
+                  alt="Product Image"
+                  width={200}
+                  height={200}
+                  className="rounded-lg"
+                />
+              ) : (
+                <span className="text-gray-500 italic">Tidak ada gambar</span>
+              )}
             </div>
           </div>
-          <div className="flex justify-end mt-6">
+          <div className="mt-6 flex justify-end">
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition font-medium"
               onClick={handleCloseDetail}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               Tutup
             </button>

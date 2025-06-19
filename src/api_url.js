@@ -17,6 +17,7 @@ const api_url = {
   sellerApplication: `${BASE_URL}/api/seller-application/`,
   reportProblem: `${BASE_URL}/api/report-problem/`,
   sellerLevel: `${BASE_URL}/api/seller-level/`,
+  chat: `${BASE_URL}/api/chat/`,
 };
 
 export default api_url;

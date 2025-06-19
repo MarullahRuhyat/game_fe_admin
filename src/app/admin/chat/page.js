@@ -10,10 +10,10 @@ import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import Image from "next/image";
 
-export default function ReportProblemPage() {
+export default function ChatPage() {
   const router = useRouter();
 
-  const [reportProblems, setReportProblems] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [pageSize, setPageSize] = useState(10); // NEW
   const [email, setEmail] = useState(""); // NEW
   const [loading, setLoading] = useState(true);
@@ -21,10 +21,8 @@ export default function ReportProblemPage() {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);
-  const [reportProblemDetail, setReportProblemDetail] = useState(null);
 
-  const fetchReportProblems = async (url = null) => {
+  const fetchRoom = async (url = null) => {
     const token = Cookies.get("token");
     if (!token) {
       Swal.fire({
@@ -41,12 +39,12 @@ export default function ReportProblemPage() {
       "Content-Type": "application/json",
     };
     setLoading(true);
-    let query_params = `?transaction=true&page=${pageActive}&page_size=${pageSize}`;
+    let query_params = `?&page=${pageActive}&page_size=${pageSize}`;
     if (email) {
       query_params += `&email=${encodeURIComponent(email)}`;
     }
     if (url == null) {
-      url = `${api_url.reportProblem}${query_params}`;
+      url = `${api_url.chat}get_room${query_params}`;
     }
 
     try {
@@ -102,7 +100,7 @@ export default function ReportProblemPage() {
         setPageActive(parseInt(page) - 1);
       }
 
-      setReportProblems(data.results);
+      setRooms(data.results);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -116,7 +114,7 @@ export default function ReportProblemPage() {
   };
 
   useEffect(() => {
-    fetchReportProblems();
+    fetchRoom();
   }, [pageSize, email]);
 
   const handleSearchChange = (e) => {
@@ -134,19 +132,20 @@ export default function ReportProblemPage() {
 
   const handlePagination = (url) => {
     setLoading(true);
-    fetchReportProblems(url);
+    fetchRoom(url);
   };
 
-  const listHeaderTable = ["Order id", "Nama", "email", "title", "Aksi"];
+  const listHeaderTable = [
+    "Kode Room",
+    "Partisipan 1",
+    "Partisipan 2",
+    "Pesan Terakhir",
+    "Aksi",
+  ];
 
-  const handleShowDetail = (report) => {
-    setReportProblemDetail(report);
-    setShowDetail(true);
+  const handleDetailChat = (room) => {
+    router.push(`/admin/chat/${room.code_chat}`);
   };
-  const handleCloseDetail = () => {
-    setShowDetail(false);
-  };
-
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
       <section className="mb-6 2xl:mb-0 2xl:flex-1">
@@ -193,45 +192,43 @@ export default function ReportProblemPage() {
                         Memuat service...
                       </td>
                     </tr>
-                  ) : reportProblems.length > 0 ? (
-                    reportProblems.map((report, index) => (
+                  ) : rooms.length > 0 ? (
+                    rooms.map((room, index) => (
                       <tr
-                        key={report.id}
+                        key={index}
                         className="border-b border-bgray-300 dark:border-darkblack-400 text-center cursor-pointer"
                       >
-                        <td className="px-6 py-5 xl:px-0">
+                        <td className="px-6 py-5 xl:px-0 ">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.transaction.order_id}
+                              {room.code_chat}
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 xl:px-0">
+                        {room.participants.map((participant, idx) => (
+                          <td key={idx} className="px-6 py-5 xl:px-0 ">
+                            <div className="flex justify-center w-full items-center space-x-2.5">
+                              <span className="font-medium text-bgray-600 dark:text-bgray-50">
+                                {participant.name} / {participant.email}
+                              </span>
+                            </div>
+                          </td>
+                        ))}
+                        <td className="px-6 py-5 xl:px-0 ">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.user.first_name}
+                              {room.last_message}
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <div className="flex justify-center w-full items-center space-x-2.5">
-                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.user.email}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
-                          <div className="flex justify-center w-full items-center space-x-2.5">
-                            <span className="font-medium text-bgray-600 dark:text-bgray-50">
-                              {report.title}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5 xl:px-0">
+                        <td className="px-6 py-5 xl:px-0 ">
                           <div className="flex justify-center w-full items-center space-x-2.5">
                             <ButtonDetail
-                              handle={() => handleShowDetail(report)}
-                            />
+                              handle={() => handleDetailChat(room)}
+                              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                            >
+                              Detail
+                            </ButtonDetail>
                           </div>
                         </td>
                       </tr>
@@ -369,77 +366,6 @@ export default function ReportProblemPage() {
           </div>
         </div>
       </section>
-      {/* modal show detail */}
-      <div
-        className={`${
-          showDetail ? "flex" : "hidden"
-        } fixed inset-0 z-50 items-center justify-center `}
-      >
-        <div className="bg-white dark:bg-darkblack-600 rounded-2xl shadow-2xl p-6 w-full max-w-2xl">
-          <div className="flex justify-between items-center border-b pb-4 mb-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-              Detail Laporan Masalah
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 text-gray-700 dark:text-white">
-            <div>
-              <strong>Nama:</strong> {reportProblemDetail?.user.first_name}
-            </div>
-            <div>
-              <strong>Email:</strong> {reportProblemDetail?.user.email}
-            </div>
-            <div>
-              <strong>Judul:</strong> {reportProblemDetail?.title}
-            </div>
-            <div>
-              <strong>Deskripsi:</strong>
-              <p className="mt-1">{reportProblemDetail?.description}</p>
-            </div>
-            <div>
-              <strong>Order Id:</strong>
-              <p className="mt-1">
-                {reportProblemDetail?.transaction.order_id}
-              </p>
-            </div>
-            <div>
-              <strong>Penjual:</strong>
-              <p className="mt-1">{reportProblemDetail?.transaction.seller}</p>
-            </div>
-            <div>
-              <strong>Pembeli:</strong>
-              <p className="mt-1">{reportProblemDetail?.transaction.buyer}</p>
-            </div>
-            <div>
-              <strong>Gambar:</strong>
-              <a href={`${reportProblemDetail?.file}`} target="_blank">
-                {reportProblemDetail?.file ? (
-                  <Image
-                    src={`${reportProblemDetail.file}`}
-                    alt="Gambar"
-                    width={500}
-                    height={500}
-                    className="mt-2 rounded-lg"
-                  />
-                ) : (
-                  <p className="mt-1 text-sm italic text-gray-400">
-                    Tidak ada gambar
-                  </p>
-                )}
-              </a>
-            </div>
-          </div>
-          <div className="flex justify-end mt-6">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition font-medium"
-              onClick={handleCloseDetail}
-            >
-              Tutup
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* end modal show detail */}
     </div>
   );
 }

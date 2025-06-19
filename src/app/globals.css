@@ -40,3 +40,9 @@ a {
     color-scheme: dark;
   }
 }
+
+
+/* scroll hidden */
+.scroll-hidden {
+  overflow: hidden;
+}

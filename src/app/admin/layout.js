@@ -114,6 +114,16 @@ export default function UserLayout({ children }) {
           path: "/admin/report-problem-transaction",
           icon: <WarningIcon />,
         },
+        {
+          label: "Transaksi",
+          path: "/admin/transaction",
+          icon: <DashboardIcon />,
+        },
+        {
+          label: "Chat",
+          path: "/admin/chat",
+          icon: <DashboardIcon />,
+        },
       ],
     },
     {
