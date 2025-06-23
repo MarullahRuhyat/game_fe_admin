@@ -152,8 +152,6 @@ export default function ChatRoomDetailStatic() {
                 }`}
               >
                 {msg.message}
-                {msg.sender}
-                {participants[0].id}
                 <div className="text-[10px]  opacity-70 mt-1">
                   {/* convert to date time */}
                   {new Date(msg.created_at).toLocaleDateString([], {
