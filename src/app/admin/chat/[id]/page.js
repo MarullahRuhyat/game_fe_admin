@@ -10,35 +10,6 @@ export default function ChatRoomDetailStatic() {
   const messageEndRef = useRef(null);
   const { id } = useParams();
   const router = useRouter();
-  const dummyRoom = {
-    participant: {
-      name: "Toko Maju Jaya",
-      is_online: true,
-      image: "https://via.placeholder.com/40x40.png?text=TJ",
-    },
-    messages: [
-      {
-        message: "Halo, barang masih tersedia?",
-        isMine: false,
-        time: "14:10",
-      },
-      {
-        message: "Iya, masih tersedia kak.",
-        isMine: true,
-        time: "14:11",
-      },
-      {
-        message: "Oke saya order ya.",
-        isMine: false,
-        time: "14:12",
-      },
-      {
-        message: "Siap kak, terima kasih 🙏",
-        isMine: true,
-        time: "14:13",
-      },
-    ],
-  };
 
   const fetchChat = async () => {
     const token = Cookies.get("token");
@@ -69,21 +40,6 @@ export default function ChatRoomDetailStatic() {
   useEffect(() => {
     fetchChat();
   }, [id, router]);
-
-  const handleSend = () => {
-    if (message.trim() !== "") {
-      dummyRoom.messages.push({
-        message,
-        isMine: true,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      });
-      setMessage("");
-      scrollToBottom();
-    }
-  };
 
   const scrollToBottom = () => {
     setTimeout(() => {
