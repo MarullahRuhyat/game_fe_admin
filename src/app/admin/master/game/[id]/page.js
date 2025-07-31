@@ -10,6 +10,7 @@ import { fetchServiceGame } from "@/redux/action/serviceGameAction";
 import { updateGame } from "@/redux/slice/gameSlice";
 import { ButtonSave, ButtonCancel } from "@/component/button";
 import { Input, InputSelect } from "@/component/input";
+import { store } from "@/redux/store";
 
 export default function EditGamePage() {
   const { id } = useParams();
@@ -31,6 +32,7 @@ export default function EditGamePage() {
     sensitif_game: 0,
     popular: 0,
     image: null,
+    store_game: 0,
   });
 
   useEffect(() => {
@@ -49,6 +51,7 @@ export default function EditGamePage() {
             sensitif_game: data.sensitif_game ? 1 : 0,
             popular: data.popular ? 1 : 0,
             image: null, // Tidak menampilkan gambar lama
+            store_game: data.isStoreGame ? 1 : 0,
           });
           setPreviewImage(data.image);
         } else {
@@ -106,8 +109,8 @@ export default function EditGamePage() {
     );
     formDataFile.append("sensitif_game", formData.sensitif_game);
     formDataFile.append("popular", formData.popular);
+    formDataFile.append("isStoreGame", formData.store_game);
     if (formData.image) formDataFile.append("image", formData.image);
-    console.log("formDataFile", formDataFile);
 
     try {
       const res = await fetch(`${api_url.game}${id}/`, {
@@ -170,12 +173,18 @@ export default function EditGamePage() {
       popular: checked ? "1" : "0",
     }));
   };
+
+  const handleStoreChange = (e) => {
+    const { checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      store_game: checked ? "1" : "0",
+    }));
+  };
+
   const handleBack = () => {
     router.push("/admin/master/game");
   };
-
-  console.log("formData", formData);
-  console.log("serviceGame", serviceGame);
 
   return (
     <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
@@ -291,6 +300,23 @@ export default function EditGamePage() {
                           className="mr-2"
                         />
                         Populer
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Store Game
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center text-black dark:text-white">
+                        <input
+                          type="checkbox"
+                          value="1"
+                          checked={formData.store_game === 1}
+                          onChange={handleStoreChange}
+                          className="mr-2"
+                        />
+                        Store
                       </label>
                     </div>
                   </div>

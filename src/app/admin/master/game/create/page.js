@@ -19,6 +19,7 @@ export default function CreateGamePage() {
     sensitif_game: 0,
     popular: 0,
     image: "",
+    store_game: 0,
   });
   const [previewImage, setPreviewImage] = useState("");
 
@@ -84,6 +85,14 @@ export default function CreateGamePage() {
     }));
   };
 
+  const handleStoreChange = (e) => {
+    const { value, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      store_game: checked ? value : 0,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = Cookies.get("token");
@@ -107,7 +116,7 @@ export default function CreateGamePage() {
     formDataFile.append("sensitif_game", formData.sensitif_game);
     formDataFile.append("popular", formData.popular);
     formDataFile.append("image", formData.image);
-    console.log("formDataFile", formDataFile);
+    formDataFile.append("isStoreGame", formData.store_game);
 
     try {
       const res = await fetch(api_url.game, {
@@ -177,8 +186,6 @@ export default function CreateGamePage() {
       image: file,
     }));
   };
-
-  console.log("formData", formData);
 
   return (
     <div className="grid grid-cols-1 rounded-xl bg-white dark:bg-darkblack-600 xl:grid-cols-12">
@@ -294,6 +301,23 @@ export default function CreateGamePage() {
                           className="mr-2"
                         />
                         Populer
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                      Store Game
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center text-black dark:text-white">
+                        <input
+                          type="checkbox"
+                          value="1"
+                          checked={formData.store_game === "1"}
+                          onChange={handleStoreChange}
+                          className="mr-2"
+                        />
+                        Store
                       </label>
                     </div>
                   </div>
