@@ -9,6 +9,7 @@ import { ButtonDetail } from "@/component/button";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ReportProblemPage() {
   const router = useRouter();
@@ -147,6 +148,8 @@ export default function ReportProblemPage() {
     setShowDetail(false);
   };
 
+  console.log("reportProblemDetail", reportProblems);
+
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
       <section className="mb-6 2xl:mb-0 2xl:flex-1">
@@ -232,6 +235,22 @@ export default function ReportProblemPage() {
                             <ButtonDetail
                               handle={() => handleShowDetail(report)}
                             />
+                            <Link
+                              href={`/admin/chat/${
+                                report.transaction.user.id <
+                                report.transaction.product.store_id
+                                  ? report.transaction.user.id +
+                                    "_" +
+                                    report.transaction.product.store_id
+                                  : report.transaction.product.store_id +
+                                    "_" +
+                                    report.transaction.user.id
+                              }`}
+                            >
+                              <button className="px-4 py-2 bg-green-600 text-white rounded-md shadow">
+                                <span className="font-medium">Chat</span>
+                              </button>
+                            </Link>
                           </div>
                         </td>
                       </tr>

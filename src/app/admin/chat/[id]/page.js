@@ -192,7 +192,7 @@ export default function ChatRoomDetailStatic() {
         </div>
 
         {/* Chat Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-bgray-50 dark:bg-darkblack-500">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-bgray-50 dark:bg-darkblack-500 scroll-hidden">
           {messages.length > 0 &&
             messages.map((msg, index) => (
               <div
