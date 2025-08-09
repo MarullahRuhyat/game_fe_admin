@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
@@ -12,6 +12,9 @@ import { ButtonSave, ButtonCancel } from "@/component/button";
 import { Input, InputSelect } from "@/component/input";
 
 export default function CreateGamePage() {
+  const searchParams = useSearchParams();
+  const parent = searchParams.get("parent");
+
   const [formData, setFormData] = useState({
     name: "",
     genre: "",
@@ -117,6 +120,9 @@ export default function CreateGamePage() {
     formDataFile.append("popular", formData.popular);
     formDataFile.append("image", formData.image);
     formDataFile.append("isStoreGame", formData.store_game);
+    if (parent) {
+      formDataFile.append("parent", parent);
+    }
 
     try {
       const res = await fetch(api_url.game, {
@@ -139,6 +145,10 @@ export default function CreateGamePage() {
           confirmButtonText: "OK",
         }).then((result) => {
           if (result.isConfirmed) {
+            if (parent) {
+              router.push(`/admin/master/game/${parent}/game`);
+              return;
+            }
             router.push("/admin/master/game");
           }
         });
@@ -161,6 +171,7 @@ export default function CreateGamePage() {
           icon: "error",
           showCancelButton: false,
           confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
         });
       }
     } catch (error) {
@@ -170,11 +181,16 @@ export default function CreateGamePage() {
         icon: "error",
         showCancelButton: false,
         confirmButtonText: "OK",
+        confirmButtonColor: "#3085d6",
       });
     }
   };
 
   const handleBack = () => {
+    if (parent) {
+      router.push(`/admin/master/game/${parent}/game`);
+      return;
+    }
     router.push("/admin/master/game");
   };
 
@@ -304,7 +320,9 @@ export default function CreateGamePage() {
                       </label>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div
+                    className={`flex flex-col gap-2 ${parent ? "hidden" : ""} `}
+                  >
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Store Game
                     </label>

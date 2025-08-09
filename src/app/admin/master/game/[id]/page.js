@@ -24,6 +24,7 @@ export default function EditGamePage() {
   const { serviceGame, isFetchServiceGame } = useSelector(
     (state) => state.serviceGame
   );
+  const [parent, setParent] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -54,6 +55,9 @@ export default function EditGamePage() {
             store_game: data.isStoreGame ? 1 : 0,
           });
           setPreviewImage(data.image);
+          if (data.parent_game) {
+            setParent(data.parent_game);
+          }
         } else {
           Swal.fire("Error", "Gagal mengambil data game.", "error");
           router.push("/admin/master/game");
@@ -131,6 +135,10 @@ export default function EditGamePage() {
           confirmButtonColor: "#3085d6",
         }).then((result) => {
           if (result.isConfirmed) {
+            if (parent) {
+              router.push(`/admin/master/game/${parent}/game`);
+              return;
+            }
             router.push("/admin/master/game");
           }
         });
@@ -183,6 +191,10 @@ export default function EditGamePage() {
   };
 
   const handleBack = () => {
+    if (parent) {
+      router.push(`/admin/master/game/${parent}/game`);
+      return;
+    }
     router.push("/admin/master/game");
   };
 
@@ -303,7 +315,9 @@ export default function EditGamePage() {
                       </label>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div
+                    className={`flex flex-col gap-2 ${parent ? "hidden" : ""}`}
+                  >
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Store Game
                     </label>

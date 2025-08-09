@@ -3,7 +3,7 @@
 import api_url from "@/api_url";
 import { fetchGame } from "@/redux/action/gameAction";
 import { fetchGenreGame } from "@/redux/action/genreGameAction";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
@@ -21,11 +21,14 @@ export default function GamePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("");
   const itemsPerPage = 10;
+  const { id } = useParams();
 
   const router = useRouter();
   const dispatch = useDispatch();
 
   const { games, isFetchGame } = useSelector((state) => state.game);
+  const [parent, setParent] = useState({});
+
   const { genreGame, isFetchGenreGame } = useSelector(
     (state) => state.genreGame
   );
@@ -55,7 +58,11 @@ export default function GamePage() {
         setCurrentPage(lastPage);
       }
     }
-    filtered = filtered.filter((game) => game.parent_game === null);
+    const test = filtered.filter((game) => game.id === parseInt(id));
+    console.log("ada", test);
+    setParent(test[0]);
+
+    filtered = filtered.filter((game) => game.parent_game === parseInt(id));
 
     if (searchQuery) {
       filtered = filtered.filter((game) =>
@@ -150,7 +157,7 @@ export default function GamePage() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const handleAddGame = () => {
-    router.push("/admin/master/game/create");
+    router.push(`/admin/master/game/create?parent=${id}`);
   };
   const handleEditGame = (id) => {
     router.push(`/admin/master/game/${id}`);
@@ -171,6 +178,17 @@ export default function GamePage() {
       <section className="mb-6 2xl:mb-0 2xl:flex-1">
         <div className="w-full rounded-lg bg-white px-[24px] py-[20px] dark:bg-darkblack-600">
           <div className="flex flex-col space-y-10 md:space-y-0">
+            <div className="flex space-x-2 items-center">
+              <Link
+                href={"/admin/master/game"}
+                className="bg-blue-500 hover:bg-blue-600 text-black dark:text-white px-4 py-2 rounded-lg"
+              >
+                Kembali
+              </Link>
+              <h3 className="text-2xl font-semibold text-black dark:text-white">
+                {parent?.name}
+              </h3>
+            </div>
             <div className="filter-content w-full">
               <div className="w-full">
                 <div className="relative space-y-5 md:space-y-0 h-[56px] w-full flex flex-col md:flex-row  md:items-center md:justify-between">
@@ -288,16 +306,6 @@ export default function GamePage() {
                             <ButtonDelete
                               handle={() => handleDelete(game.id)}
                             />
-                            {game.isStoreGame == true ? (
-                              <Link
-                                href={`/admin/master/game/${game.id}/game`}
-                                className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-lg text-white"
-                              >
-                                Game
-                              </Link>
-                            ) : (
-                              ""
-                            )}
                           </div>
                         </td>
                       </tr>
