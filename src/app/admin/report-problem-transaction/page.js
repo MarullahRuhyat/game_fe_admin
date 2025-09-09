@@ -27,6 +27,8 @@ export default function ReportProblemPage() {
 
   const fetchReportProblems = async (url = null) => {
     const token = Cookies.get("token");
+    // ambil dari params
+
     if (!token) {
       Swal.fire({
         icon: "error",
@@ -245,7 +247,7 @@ export default function ReportProblemPage() {
                                   : report.transaction.product.store_id +
                                     "_" +
                                     report.transaction.user.id
-                              }`}
+                              }?order_id=${report.transaction.id}`}
                             >
                               <button className="px-4 py-2 bg-green-600 text-white rounded-md shadow">
                                 <span className="font-medium">Chat</span>

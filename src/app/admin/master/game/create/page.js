@@ -101,9 +101,11 @@ export default function CreateGamePage() {
     const token = Cookies.get("token");
 
     // cek service game jika [] kosong
-    if (formData.game_services.length === 0) {
-      Swal.fire("Gagal", "Pilih minimal satu service game.", "error");
-      return;
+    if (!parent) {
+      if (formData.game_services.length === 0) {
+        Swal.fire("Gagal", "Pilih minimal satu service game.", "error");
+        return;
+      }
     }
     // handle file
 
@@ -227,22 +229,24 @@ export default function CreateGamePage() {
                       placeholder="Masukkan nama game"
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
-                      Genre
-                    </label>
-                    <InputSelect
-                      name="genre"
-                      value={formData.genre}
-                      handle={handleChange}
-                      placeholder="Pilih genre"
-                      required={true}
-                      options={genreGame.map((genre) => ({
-                        value: genre.id,
-                        label: genre.name,
-                      }))}
-                    />
-                  </div>
+                  {!parent && (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                        Genre
+                      </label>
+                      <InputSelect
+                        name="genre"
+                        value={formData.genre}
+                        handle={handleChange}
+                        placeholder="Pilih genre"
+                        required={true}
+                        options={genreGame.map((genre) => ({
+                          value: genre.id,
+                          label: genre.name,
+                        }))}
+                      />
+                    </div>
+                  )}
                   <div className="flex flex-col gap-2">
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Image
@@ -264,45 +268,51 @@ export default function CreateGamePage() {
                       value={formData.image}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
-                      Service Game
-                    </label>
-                    <div className="flex flex-wrap gap-3">
-                      {serviceGame.map((service) => (
-                        <label
-                          key={service.id}
-                          className="inline-flex items-center text-black dark:text-white"
-                        >
-                          <input
-                            type="checkbox"
-                            value={service.id}
-                            checked={formData.game_services.includes(service)}
-                            onChange={handleCheckboxChange}
-                            className="mr-2"
-                          />
-                          {service.name_eng}
+                  {!parent && (
+                    <>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                          Service Game
                         </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
-                      Sensitif Game
-                    </label>
-                    <div className="flex flex-wrap gap-3">
-                      <label className="inline-flex items-center text-black dark:text-white">
-                        <input
-                          type="checkbox"
-                          value="1"
-                          checked={formData.sensitif_game === "1"}
-                          onChange={handleSensitifChange}
-                          className="mr-2"
-                        />
-                        Sensitif
-                      </label>
-                    </div>
-                  </div>
+                        <div className="flex flex-wrap gap-3">
+                          {serviceGame.map((service) => (
+                            <label
+                              key={service.id}
+                              className="inline-flex items-center text-black dark:text-white"
+                            >
+                              <input
+                                type="checkbox"
+                                value={service.id}
+                                checked={formData.game_services.includes(
+                                  service
+                                )}
+                                onChange={handleCheckboxChange}
+                                className="mr-2"
+                              />
+                              {service.name_eng}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
+                          Sensitif Game
+                        </label>
+                        <div className="flex flex-wrap gap-3">
+                          <label className="inline-flex items-center text-black dark:text-white">
+                            <input
+                              type="checkbox"
+                              value="1"
+                              checked={formData.sensitif_game === "1"}
+                              onChange={handleSensitifChange}
+                              className="mr-2"
+                            />
+                            Sensitif
+                          </label>
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div className="flex flex-col gap-2">
                     <label className="text-base font-medium text-bgray-600 dark:text-bgray-50">
                       Populer Game

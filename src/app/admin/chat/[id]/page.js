@@ -2,7 +2,7 @@
 import api_url from "@/api_url";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, use } from "react";
 import Image from "next/image";
 import { currencyIndonesianFormat } from "@/helper/currency";
 
@@ -15,6 +15,8 @@ export default function ChatRoomDetailStatic() {
   const wsRef = useRef(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [message, setMessage] = useState("");
+  const order_id = new URLSearchParams(window.location.search).get("order_id");
+  const [replyTo, setReplyTo] = useState(null);
 
   // ✅ Fetch chat data awal
   const fetchChat = async () => {
@@ -40,7 +42,7 @@ export default function ChatRoomDetailStatic() {
       setMessages(data.data || []);
       setParticipants(data.participants || []);
     } catch (error) {
-      console.error("Error fetching chat data:", error);
+      console.log("Error fetching chat data:", error);
     }
   };
 
@@ -74,12 +76,9 @@ export default function ChatRoomDetailStatic() {
     const ws = new WebSocket(
       `${SOCKET_URL}/${id.split("_")[0]}/?token=${token}`
     );
-    console.log("ws", ws);
     wsRef.current = ws;
 
-    ws.onopen = () => {
-      console.log(`✅ Connected to channel: ${id}`);
-    };
+    ws.onopen = () => {};
 
     ws.onmessage = (event) => {
       try {
@@ -92,12 +91,12 @@ export default function ChatRoomDetailStatic() {
           scrollToBottom();
         }
       } catch (error) {
-        console.error("Error parsing WS message:", error);
+        console.log("Error parsing WS message:", error);
       }
     };
 
     ws.onerror = (err) => {
-      console.error("WebSocket error:", err);
+      console.log("WebSocket error:", err);
     };
 
     ws.onclose = () => {
@@ -105,6 +104,42 @@ export default function ChatRoomDetailStatic() {
       setTimeout(connectWebSocket, 5000); // reconnect otomatis
     };
   };
+
+  async function fetchTransactionDetails(order_id) {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+    const url = `${api_url.transaction}${order_id}`;
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch transaction details");
+      }
+      const data = await response.json();
+      console.log("Transaction Details:", data);
+
+      setReplyTo(data);
+      return data;
+    } catch (error) {
+      console.log("Error fetching transaction details:", error);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    if (order_id) {
+      fetchTransactionDetails(order_id);
+    }
+  }, [order_id]);
 
   // ✅ Fetch data awal & connect WS
   useEffect(() => {
@@ -119,8 +154,6 @@ export default function ChatRoomDetailStatic() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  console.log("messages", messages);
 
   // ✅ Handle post chat message
   const handlePostChatMessage = async (message) => {
@@ -140,18 +173,22 @@ export default function ChatRoomDetailStatic() {
         body: JSON.stringify({
           code_chat: id,
           message: message,
+          order: order_id || null,
         }),
       });
       const data = await response.json();
-      console.log("Message sent:", data);
       if (!response.ok) {
         throw new Error("Failed to post chat message");
       }
-
       // Clear the message input after sending
       setMessage("");
+      if (order_id) {
+        router.push(`/admin/chat/${id}`);
+        setReplyTo(null);
+        return;
+      }
     } catch (error) {
-      console.error("Error posting chat message:", error);
+      console.log("Error posting chat message:", error);
     }
   };
 
@@ -292,8 +329,38 @@ export default function ChatRoomDetailStatic() {
             ))}
           <div ref={messageEndRef}></div>
         </div>
-        <div className="shrink-0 flex items-center gap-2 pt-2 p-4 bg-[#00bbff]/20 border-t border-white/30">
+        <div className="shrink-0 flex  items-center gap-2 pt-2 p-4 bg-[#00bbff]/20 border-t border-white/30">
+          {/* jika ada transaction detail tampilin */}
+
           <div className="flex-1 flex flex-col gap-2">
+            {replyTo && (
+              <div
+                className={` items-center gap-3 w-full bg-white rounded-lg shadow px-3 py-2 flex`}
+              >
+                <img
+                  src={replyTo?.product.image}
+                  className="w-12 h-12 rounded object-cover"
+                />
+                <div className="flex-1">
+                  <p className={`text-gray-500 text-xs block`}>
+                    {`${replyTo?.order_id}`}
+                  </p>
+                  <p className="text-black font-medium text-sm truncate md:hidden">
+                    {(replyTo?.name?.length > 30
+                      ? replyTo.name.slice(0, 30) + "…"
+                      : replyTo?.name) || "Product Name"}
+                  </p>
+
+                  <p className="text-black font-medium text-sm truncate hidden md:block">
+                    {replyTo?.name || "Product Name"}
+                  </p>
+                  <p className="text-gray-600 text-xs">
+                    {" "}
+                    {currencyIndonesianFormat(parseInt(replyTo?.price) || 0)}
+                  </p>
+                </div>
+              </div>
+            )}
             {/* Textarea */}
             <textarea
               value={message}
@@ -321,7 +388,9 @@ export default function ChatRoomDetailStatic() {
                 setMessage("");
               }
             }}
-            className={`px-4 py-2mb-6 bg-[#00BBFF] text-white rounded-lg flex items-center gap-2 hover:bg-[#009edb] transition`}
+            className={`px-4 py-2mb-6 bg-[#00BBFF] text-white rounded-lg flex items-center gap-2 hover:bg-[#009edb] transition ${
+              replyTo ? "mt-16" : ""
+            }`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path
