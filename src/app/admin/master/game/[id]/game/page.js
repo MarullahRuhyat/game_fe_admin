@@ -59,10 +59,9 @@ export default function GamePage() {
       }
     }
     const test = filtered.filter((game) => game.id === parseInt(id));
-    console.log("ada", test);
     setParent(test[0]);
 
-    filtered = filtered.filter((game) => game.parent_game === parseInt(id));
+    filtered = filtered.filter((game) => game.parent_game?.id === parseInt(id));
 
     if (searchQuery) {
       filtered = filtered.filter((game) =>
@@ -172,6 +171,9 @@ export default function GamePage() {
     "Image",
     "Aksi",
   ];
+  console.log("currentGames", currentGames);
+  console.log("filteredGames", filteredGames);
+  console.log("games", games);
 
   return (
     <div className="2xl:flex 2xl:space-x-[48px]">
