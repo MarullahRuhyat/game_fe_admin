@@ -237,8 +237,8 @@ export default function WithdrawPage() {
   const listHeaderTable = [
     "No",
     "Nama Pengguna",
-    "Jumlah",
-    "bank",
+    "Jumlah diterima",
+    "Bank",
     "Nama Akun",
     "Nomor Akun",
     "Status",
@@ -314,9 +314,9 @@ export default function WithdrawPage() {
                           <td className="px-6 py-5 xl:px-0">
                             <span className="text-base font-medium text-bgray-900 dark:text-white">
                               Rp{" "}
-                              {parseFloat(withdraw.amount).toLocaleString(
-                                "id-ID"
-                              )}
+                              {parseFloat(
+                                withdraw.amount - withdraw.admin_fee
+                              ).toLocaleString("id-ID")}
                             </span>
                           </td>
                           <td className="px-6 py-5 xl:px-0">
@@ -360,29 +360,7 @@ export default function WithdrawPage() {
                             </span>
                           </td>
                           <td className="px-6 py-5 xl:px-0">
-                            {withdraw.status === "pending" ? (
-                              <div className="flex gap-2 justify-center">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleAction(withdraw.id, "approve");
-                                  }}
-                                  className="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleAction(withdraw.id, "reject");
-                                  }}
-                                  className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            ) : (
-                              // button view detail
+                            <div className="flex gap-2 justify-center">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -393,7 +371,25 @@ export default function WithdrawPage() {
                               >
                                 Detail
                               </button>
-                            )}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAction(withdraw.id, "approve");
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded-md"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAction(withdraw.id, "reject");
+                                }}
+                                className="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded-md"
+                              >
+                                Reject
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -569,6 +565,26 @@ const WithdrawDetailModal = ({ isOpen, onClose, data }) => {
             <span className="text-gray-600 font-medium">Jumlah Penarikan:</span>
             <span>Rp{parseFloat(data?.amount || 0).toLocaleString()}</span>
           </div>
+          {/* biaya admin */}
+          <div className="flex justify-between">
+            <span className="text-gray-600 font-medium">Biaya Admin:</span>
+            <span>
+              Rp{parseFloat(data?.admin_fee || 0).toLocaleString() || "-"}
+            </span>
+          </div>
+          {/* total dana yang diterima */}
+          <div className="flex justify-between">
+            <span className="text-gray-600 font-medium">
+              Total Dana Diterima:
+            </span>
+            <span>
+              Rp
+              {parseFloat(
+                (data?.amount || 0) - (data?.admin_fee || 0)
+              ).toLocaleString()}
+            </span>
+          </div>
+
           <div className="flex justify-between">
             <span className="text-gray-600 font-medium">Bank:</span>
             <span>{data?.bank_name || "-"}</span>
