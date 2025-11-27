@@ -117,13 +117,28 @@ export default function GamePage() {
       });
 
       if (res.ok) {
-        Swal.fire("Berhasil!", "Game berhasil dihapus.", "success");
+        Swal.fire({
+          title: "Berhasil!",
+          text: "Game telah dihapus.",
+          icon: "success",
+          confirmButtonColor: "#4F46E5",
+        });
         dispatch(removeGame(id));
       } else {
-        Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus game.", "error");
+        Swal.fire({
+          title: "Gagal!",
+          text: "Terjadi kesalahan saat menghapus game.",
+          icon: "error",
+          confirmButtonColor: "#4F46E5",
+        });
       }
     } catch (error) {
-      Swal.fire("Error", "Terjadi kesalahan.", "error");
+      Swal.fire({
+        title: "Error",
+        text: "Terjadi kesalahan.",
+        icon: "error",
+        confirmButtonColor: "#4F46E5",
+      });
     }
   };
 

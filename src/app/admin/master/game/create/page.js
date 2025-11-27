@@ -103,7 +103,14 @@ export default function CreateGamePage() {
     // cek service game jika [] kosong
     if (!parent) {
       if (formData.game_services.length === 0) {
-        Swal.fire("Gagal", "Pilih minimal satu service game.", "error");
+        Swal.fire({
+          title: "Gagal",
+          text: "Service game harus dipilih minimal satu.",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
+        });
         return;
       }
     }
@@ -145,6 +152,7 @@ export default function CreateGamePage() {
           icon: "success",
           showCancelButton: false,
           confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
         }).then((result) => {
           if (result.isConfirmed) {
             if (parent) {
@@ -161,6 +169,7 @@ export default function CreateGamePage() {
           icon: "error",
           showCancelButton: false,
           confirmButtonText: "OK",
+          confirmButtonColor: "#4F46E5",
         });
 
         Cookies.remove("token");
@@ -173,7 +182,7 @@ export default function CreateGamePage() {
           icon: "error",
           showCancelButton: false,
           confirmButtonText: "OK",
-          confirmButtonColor: "#3085d6",
+          confirmButtonColor: "#4F46E5",
         });
       }
     } catch (error) {
@@ -183,7 +192,7 @@ export default function CreateGamePage() {
         icon: "error",
         showCancelButton: false,
         confirmButtonText: "OK",
-        confirmButtonColor: "#3085d6",
+        confirmButtonColor: "#4F46E5",
       });
     }
   };
